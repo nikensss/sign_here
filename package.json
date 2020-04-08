@@ -1,0 +1,28 @@
+{
+  "name": "sign_here",
+  "version": "0.0.1",
+  "description": "Signs all PDF's under the selected folder with the provided hand signature image",
+  "main": "index.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nikensss/sign_here.git"
+  },
+  "author": "Ricard Mallafre",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nikensss/sign_here/issues"
+  },
+  "homepage": "https://github.com/nikensss/sign_here#readme",
+  "devDependencies": {
+    "electron": "^8.2.1"
+  },
+  "dependencies": {
+    "bootstrap": "^4.4.1",
+    "dotenv": "^8.2.0",
+    "jquery": "^3.4.1",
+    "popper.js": "^1.16.1"
+  }
+}
