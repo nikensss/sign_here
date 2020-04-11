@@ -1,7 +1,6 @@
-const {
-  app,
-  BrowserWindow
-} = require('electron');
+const fs = require('fs').promises;
+const path = require('path');
+const { app, BrowserWindow, dialog, ipcMain } = require('electron');
 
 function createWindow() {
   // Create the browser window.
@@ -9,12 +8,23 @@ function createWindow() {
     width: 1600,
     height: 600,
     webPreferences: {
-      nodeIntegration: true
-    }
+      preload: path.join(__dirname, 'preload.js'),
+      nodeIntegration: false,
+      enableRemoteModule: false,
+      contextIsolation: true,
+      sandbox: true,
+    },
+  });
+
+  ipcMain.on('select-dirs', async (event, arg) => {
+    const result = await dialog.showOpenDialog(win, {
+      properties: ['openDirectory'],
+    });
+    console.log('directories selected', result.filePaths);
   });
 
   // and load the index.html of the app.
-  win.loadFile('html/index.html');
+  win.loadFile('./html/index.html');
 
   // Open the DevTools.
   win.webContents.openDevTools();
