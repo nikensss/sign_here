@@ -1,6 +1,7 @@
 const fs = require('fs').promises;
 const path = require('path');
 const { app, BrowserWindow, dialog, ipcMain } = require('electron');
+const Messages = require('./classes/Messages');
 
 function createWindow() {
   // Create the browser window.
@@ -16,7 +17,7 @@ function createWindow() {
     },
   });
 
-  ipcMain.on('select-dir', async (event, arg) => {
+  ipcMain.on(Messages.SELECT_DIR, async (event, arg) => {
     const result = await dialog.showOpenDialog(win, {
       properties: ['openDirectory'],
     });
@@ -25,7 +26,17 @@ function createWindow() {
       .readdir(result.filePaths[0])
       .catch((e) => console.error(e));
     console.log('available files: ', files);
-    event.sender.send('files', files);
+    event.sender.send(Messages.COLLECTED_PDFS, files);
+  });
+
+  ipcMain.on(Messages.SELECT_SIGNATURE, async (event, arg) => {
+    const result = await dialog.showOpenDialog(win, {
+      title: 'The title',
+      properties: ['openFile'],
+      filters: [{ name: 'Images', extensions: ['jpg', 'png'] }],
+    });
+    console.log('signature selected', result.filePaths);
+    event.sender.send(Messages.COLLECTED_SIGNATURE, result.filePaths[0]);
   });
 
   // and load the index.html of the app.

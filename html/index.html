@@ -24,21 +24,27 @@
 
 <body>
   <div class="row mx-0">
-    <div class="col p-2 d-flex flex-column justify-content-center align-items-center">
+    <div class="col mb-5 p-2 d-flex flex-column justify-content-start align-items-center">
       <p>¿Dónde está lo que se tiene que firmar?</p>
       <button id="pdf" type="button" class="btn btn-info my-2 rounded-pill w-75">
         PDF's 
       </button>
+      <div id="files-list">
+      </div>
     </div>
-    <div class="col p-2 d-flex flex-column justify-content-center align-items-center">
+    <div class="col p-2 d-flex flex-column justify-content-start align-items-center">
       <p>¿Dónde está la firma?</p>
       <button id="signature" type="button" class="btn btn-info my-2 rounded-pill w-75">
         Firma
       </button>
+
+      <div id="signature-view">
+        <img src="C:\\kleopatra\\received\\pdfs y firmas\\SIGNATURA MDOLORS.jpg" class="w-100" alt="" srcset="">
+      </div>
     </div>
   </div>
   <div class="fixed-bottom d-flex justify-content-center">
-    <button id="sign" type="button" class="btn btn-info my-2 rounded-pill w-75" disabled>
+    <button id="sign" type="button" class="btn btn-info my-2 rounded-pill w-25" disabled>
       ¡Fírmalo todo!
     </button>
   </div>
