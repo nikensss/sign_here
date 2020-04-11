@@ -2,6 +2,12 @@ const fs = require('fs').promises;
 const path = require('path');
 const { app, BrowserWindow, dialog, ipcMain } = require('electron');
 const Messages = require('./classes/Messages');
+const appState = {
+  isDirSelected: false,
+  isSignatureSelected: false,
+  selectedDir: '',
+  selectedSignature: ''
+};
 
 function createWindow() {
   // Create the browser window.
@@ -13,30 +19,68 @@ function createWindow() {
       nodeIntegration: false,
       enableRemoteModule: false,
       contextIsolation: true,
-      sandbox: true,
-    },
+      sandbox: true
+    }
   });
 
   ipcMain.on(Messages.SELECT_DIR, async (event, arg) => {
     const result = await dialog.showOpenDialog(win, {
-      properties: ['openDirectory'],
+      properties: ['openDirectory']
     });
     console.log('directories selected', result.filePaths);
+    if (result.filePaths.length === 0 || result.filePaths[0].length === 0) {
+      return;
+    }
     const files = await fs
       .readdir(result.filePaths[0])
       .catch((e) => console.error(e));
     console.log('available files: ', files);
+    if (files.length === 0) {
+      return;
+    }
+    appState.isDirSelected = true;
+    appState.selectedDir = result.filePaths[0];
     event.sender.send(Messages.COLLECTED_PDFS, files);
+    if (appState.isDirSelected && appState.isSignatureSelected) {
+      event.sender.send(Messages.CAN_SIGN);
+    }
   });
 
   ipcMain.on(Messages.SELECT_SIGNATURE, async (event, arg) => {
     const result = await dialog.showOpenDialog(win, {
       title: 'The title',
       properties: ['openFile'],
-      filters: [{ name: 'Images', extensions: ['jpg', 'png'] }],
+      filters: [{ name: 'Images', extensions: ['jpg', 'png'] }]
     });
+    if (result.filePaths.length === 0 || result.filePaths[0].length === 0) {
+      return;
+    }
     console.log('signature selected', result.filePaths);
+    appState.isSignatureSelected = true;
     event.sender.send(Messages.COLLECTED_SIGNATURE, result.filePaths[0]);
+    if (appState.isDirSelected && appState.isSignatureSelected) {
+      event.sender.send(Messages.CAN_SIGN);
+    }
+  });
+
+  ipcMain.on(Messages.SIGN_ALL, (event, arg) => {
+    console.log('signing everything');
+    // setTimeout(() => {
+    //   event.sender.send(Messages.CAN_SIGN);
+    //   console.log('everything signed!');
+    // }, 3000);
+    fs.readdir(appState.selectedDir)
+      .then((files) =>
+        files.forEach((f) => {
+          console.log('signing: ', f);
+          event.sender.send(Messages.FILE_SIGNED, f);
+        })
+      )
+      .then(() => {
+        console.log('everything signed');
+        event.sender.send(Messages.CAN_SIGN);
+      })
+      .catch((e) => console.error(e));
   });
 
   // and load the index.html of the app.

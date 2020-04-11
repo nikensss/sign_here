@@ -2,34 +2,57 @@ $(document).ready(() => {
   $('#pdf').click(() => {
     console.log('requesting pdfs directory');
     window.postMessage({
-      type: 'select-dir',
+      type: 'select-dir'
     });
   });
 
   $('#signature').click(() => {
     console.log('requesting signature image');
     window.postMessage({
-      type: 'select-signature',
+      type: 'select-signature'
     });
   });
 
+  $('#sign-all').click(() => {
+    console.log('requesting signature');
+    window.postMessage({
+      type: 'sign-all'
+    });
+    $('#sign-all').attr('disabled', true);
+  });
+
   window.showCollectedPdfs = function (files) {
-    console.log('adding ', files);
+    $('#files-list').empty();
+    console.log('showing collected files ', files);
     files.forEach((f) => {
-      const fileDiv = $('<div/>', {
-        class: 'alert alert-info',
+      // const fileRow = $('<div/>', {
+      //   class: 'row m-0 px-5'
+      // });
+      const fileCol = $('<div/>', {
+        class: 'mx-auto w-50 alert alert-info',
         id: f,
-        text: f,
+        text: f
       });
-      $('#files-list').append(fileDiv);
+      $('#files-list').append(fileCol);
     });
   };
 
   window.showCollectedSignature = function (signature) {
+    console.log('showing collected signature', signature);
     const signatureImage = $('<img/>', {
       class: 'w-100',
-      src: signature,
+      src: signature
     });
-    $('signature-view').append(signatureImage);
+    $('#signature-view').empty().append(signatureImage);
+  };
+
+  window.enableSignAll = function () {
+    $('#sign-all').attr('disabled', false);
+  };
+
+  window.fileSigned = function (file) {
+    console.log('file signed ', file);
+    this.document.getElementById(file).classList.remove('alert-info');
+    this.document.getElementById(file).classList.add('alert-success');
   };
 });
