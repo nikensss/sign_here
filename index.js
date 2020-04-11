@@ -16,11 +16,16 @@ function createWindow() {
     },
   });
 
-  ipcMain.on('select-dirs', async (event, arg) => {
+  ipcMain.on('select-dir', async (event, arg) => {
     const result = await dialog.showOpenDialog(win, {
       properties: ['openDirectory'],
     });
     console.log('directories selected', result.filePaths);
+    const files = await fs
+      .readdir(result.filePaths[0])
+      .catch((e) => console.error(e));
+    console.log('available files: ', files);
+    event.sender.send('files', files);
   });
 
   // and load the index.html of the app.
