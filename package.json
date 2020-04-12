@@ -1,10 +1,12 @@
 {
-  "name": "sign_here",
+  "name": "A firmar",
   "version": "0.0.1",
   "description": "Signs all PDF's under the selected folder with the provided hand signature image",
   "main": "index.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron-forge start",
+    "package": "electron-forge package",
+    "make": "electron-forge make"
   },
   "repository": {
     "type": "git",
@@ -17,13 +19,46 @@
   },
   "homepage": "https://github.com/nikensss/sign_here#readme",
   "devDependencies": {
+    "@electron-forge/cli": "^6.0.0-beta.50",
+    "@electron-forge/maker-deb": "^6.0.0-beta.50",
+    "@electron-forge/maker-rpm": "^6.0.0-beta.50",
+    "@electron-forge/maker-squirrel": "^6.0.0-beta.50",
+    "@electron-forge/maker-zip": "^6.0.0-beta.50",
     "electron": "^8.2.1"
   },
   "dependencies": {
     "bootstrap": "^4.4.1",
     "dotenv": "^8.2.0",
+    "electron-squirrel-startup": "^1.0.0",
     "jquery": "^3.4.1",
     "pdf-lib": "^1.4.1",
     "popper.js": "^1.16.1"
+  },
+  "config": {
+    "forge": {
+      "packagerConfig": {},
+      "makers": [
+        {
+          "name": "@electron-forge/maker-squirrel",
+          "config": {
+            "name": "sign_here"
+          }
+        },
+        {
+          "name": "@electron-forge/maker-zip",
+          "platforms": [
+            "darwin"
+          ]
+        },
+        {
+          "name": "@electron-forge/maker-deb",
+          "config": {}
+        },
+        {
+          "name": "@electron-forge/maker-rpm",
+          "config": {}
+        }
+      ]
+    }
   }
 }

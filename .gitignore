@@ -105,3 +105,6 @@ dist
 
 # Tests
 tests/
+
+#Distributable
+out
