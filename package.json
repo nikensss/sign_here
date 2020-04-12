@@ -1,5 +1,5 @@
 {
-  "name": "A firmar",
+  "name": "sign_here",
   "version": "0.0.1",
   "description": "Signs all PDF's under the selected folder with the provided hand signature image",
   "main": "index.js",
