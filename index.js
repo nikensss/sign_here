@@ -1,47 +1,44 @@
-const fs = require('fs').promises;
 const path = require('path');
 const { app, BrowserWindow, dialog, ipcMain } = require('electron');
 const Notary = require('./classes/Notary');
 const Messages = require('./classes/Messages');
-const appState = {
-  isDirSelected: false,
-  isSignatureSelected: false,
-  selectedDir: '',
-  selectedSignature: '',
-};
+const AppState = require('./classes/AppState');
+
+const appState = new AppState();
 
 function createWindow() {
   // Create the browser window.
   const win = new BrowserWindow({
-    width: 800,
+    width: 1800,
     height: 600,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: false,
       enableRemoteModule: false,
       contextIsolation: true,
-      sandbox: true,
-    },
+      sandbox: true
+    }
   });
 
-  ipcMain.on(Messages.SELECT_DIR, async (event, arg) => {
+  ipcMain.on(Messages.SELECT_FILES, async (event, arg) => {
     const result = await dialog.showOpenDialog(win, {
-      properties: ['openDirectory'],
+      properties: ['openFile', 'multiSelections'],
+      filters: [
+        { name: 'PDF', extensions: ['pdf'] },
+        { name: 'All Files', extensions: ['*'] }
+      ]
     });
-    console.log('directories selected', result.filePaths);
-    if (result.filePaths.length === 0 || result.filePaths[0].length === 0) {
+    console.log('files selected', result.filePaths);
+    if (result.filePaths.length === 0) {
       return;
     }
-    const files = await fs.readdir(result.filePaths[0]).catch((e) => console.error(e));
-    console.log('available files: ', files);
-    if (files.length === 0) {
-      return;
-    }
-    appState.isDirSelected = true;
-    appState.selectedDir = result.filePaths[0];
-    event.sender.send(Messages.COLLECTED_PDFS, files);
-    if (appState.isDirSelected && appState.isSignatureSelected) {
-      event.sender.send(Messages.CAN_SIGN);
+    appState.selectedFiles = result.filePaths;
+    event.reply(
+      Messages.COLLECTED_PDFS,
+      appState.selectedFiles.map((f) => path.basename(f))
+    );
+    if (appState.canSign()) {
+      event.reply(Messages.CAN_SIGN);
     }
   });
 
@@ -49,34 +46,36 @@ function createWindow() {
     const result = await dialog.showOpenDialog(win, {
       title: 'The title',
       properties: ['openFile'],
-      filters: [{ name: 'Images', extensions: ['jpg', 'png'] }],
+      filters: [
+        { name: 'PNG', extensions: ['png'] },
+        { name: 'JPG', extensions: ['jpg'] },
+        { name: 'Images', extensions: ['jpg', 'png'] }
+      ]
     });
     if (result.filePaths.length === 0 || result.filePaths[0].length === 0) {
       return;
     }
     console.log('signature selected', result.filePaths);
-    appState.isSignatureSelected = true;
     appState.selectedSignature = result.filePaths[0];
-    event.sender.send(Messages.COLLECTED_SIGNATURE, appState.selectedSignature);
-    if (appState.isDirSelected && appState.isSignatureSelected) {
-      event.sender.send(Messages.CAN_SIGN);
+    event.reply(Messages.COLLECTED_SIGNATURE, appState.selectedSignature);
+    if (appState.canSign()) {
+      event.reply(Messages.CAN_SIGN);
     }
   });
 
   ipcMain.on(Messages.SIGN_ALL, (event, arg) => {
     console.log('signing everything');
     const notary = new Notary();
-    fs.readdir(appState.selectedDir)
-      .then((files) =>
-        files.forEach(async (f) => {
-          console.log('signing: ', f);
-          await notary.sign(path.join(appState.selectedDir, f), appState.selectedSignature);
-          event.sender.send(Messages.FILE_SIGNED, f);
-        })
+    Promise.all(
+      appState.selectedFiles.map((f) =>
+        notary
+          .sign(f, appState.selectedSignature)
+          .then(() => event.reply(Messages.FILE_SIGNED, path.basename(f)))
       )
+    )
       .then(() => {
         console.log('everything signed');
-        event.sender.send(Messages.CAN_SIGN);
+        event.reply(Messages.CAN_SIGN);
       })
       .catch((e) => console.error(e));
   });
@@ -85,7 +84,7 @@ function createWindow() {
   win.loadFile('./html/index.html');
 
   // Open the DevTools.
-  // win.webContents.openDevTools();
+  win.webContents.openDevTools();
 }
 
 // This method will be called when Electron has finished

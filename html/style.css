@@ -20,3 +20,7 @@ body {
 .h-380px {
   height: 380px;
 }
+
+button[disabled] {
+  pointer-events: none;
+}

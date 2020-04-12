@@ -29,8 +29,8 @@ process.once('loaded', () => {
 
   window.addEventListener('message', (evt) => {
     console.log('received message', evt);
-    if (evt.data.type === 'select-dir') {
-      ipcRenderer.send('select-dir');
+    if (evt.data.type === 'select-files') {
+      ipcRenderer.send('select-files');
     } else if (evt.data.type === 'select-signature') {
       ipcRenderer.send('select-signature');
     } else if (evt.data.type === 'sign-all') {

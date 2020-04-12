@@ -1,8 +1,8 @@
 $(document).ready(() => {
   $('#pdf').click(() => {
-    console.log('requesting pdfs directory');
+    console.log('requesting pdfs files');
     window.postMessage({
-      type: 'select-dir'
+      type: 'select-files'
     });
   });
 
@@ -14,7 +14,7 @@ $(document).ready(() => {
   });
 
   $('#sign-all').click(() => {
-    console.log('requesting signature');
+    console.log('requesting signature stamping');
     window.postMessage({
       type: 'sign-all'
     });

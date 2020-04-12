@@ -24,12 +24,13 @@ class Notary {
         x: (3 * page.getWidth()) / 7,
         y: (5.21 * page.getHeight()) / 14,
         width: pngDims.width,
-        height: pngDims.height,
+        height: pngDims.height
       });
 
       const pdfBytesSaved = await pdf.save();
-      const newVersion = await fs.writeFile(file.replace('.pdf', '_firmat.pdf'), pdfBytesSaved);
-      console.log('[Notary] done signing ', file);
+      return fs
+        .writeFile(file.replace('.pdf', '_firmat.pdf'), pdfBytesSaved)
+        .then(() => console.log('[Notary] done signing ', file));
     } catch (ex) {
       console.error('Exception recorded', ex);
     }
