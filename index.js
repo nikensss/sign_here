@@ -1,12 +1,13 @@
 const fs = require('fs').promises;
 const path = require('path');
 const { app, BrowserWindow, dialog, ipcMain } = require('electron');
+const Notary = require('./classes/Notary');
 const Messages = require('./classes/Messages');
 const appState = {
   isDirSelected: false,
   isSignatureSelected: false,
   selectedDir: '',
-  selectedSignature: ''
+  selectedSignature: '',
 };
 
 function createWindow() {
@@ -19,21 +20,19 @@ function createWindow() {
       nodeIntegration: false,
       enableRemoteModule: false,
       contextIsolation: true,
-      sandbox: true
-    }
+      sandbox: true,
+    },
   });
 
   ipcMain.on(Messages.SELECT_DIR, async (event, arg) => {
     const result = await dialog.showOpenDialog(win, {
-      properties: ['openDirectory']
+      properties: ['openDirectory'],
     });
     console.log('directories selected', result.filePaths);
     if (result.filePaths.length === 0 || result.filePaths[0].length === 0) {
       return;
     }
-    const files = await fs
-      .readdir(result.filePaths[0])
-      .catch((e) => console.error(e));
+    const files = await fs.readdir(result.filePaths[0]).catch((e) => console.error(e));
     console.log('available files: ', files);
     if (files.length === 0) {
       return;
@@ -50,14 +49,15 @@ function createWindow() {
     const result = await dialog.showOpenDialog(win, {
       title: 'The title',
       properties: ['openFile'],
-      filters: [{ name: 'Images', extensions: ['jpg', 'png'] }]
+      filters: [{ name: 'Images', extensions: ['jpg', 'png'] }],
     });
     if (result.filePaths.length === 0 || result.filePaths[0].length === 0) {
       return;
     }
     console.log('signature selected', result.filePaths);
     appState.isSignatureSelected = true;
-    event.sender.send(Messages.COLLECTED_SIGNATURE, result.filePaths[0]);
+    appState.selectedSignature = result.filePaths[0];
+    event.sender.send(Messages.COLLECTED_SIGNATURE, appState.selectedSignature);
     if (appState.isDirSelected && appState.isSignatureSelected) {
       event.sender.send(Messages.CAN_SIGN);
     }
@@ -65,14 +65,12 @@ function createWindow() {
 
   ipcMain.on(Messages.SIGN_ALL, (event, arg) => {
     console.log('signing everything');
-    // setTimeout(() => {
-    //   event.sender.send(Messages.CAN_SIGN);
-    //   console.log('everything signed!');
-    // }, 3000);
+    const notary = new Notary();
     fs.readdir(appState.selectedDir)
       .then((files) =>
-        files.forEach((f) => {
+        files.forEach(async (f) => {
           console.log('signing: ', f);
+          await notary.sign(path.join(appState.selectedDir, f), appState.selectedSignature);
           event.sender.send(Messages.FILE_SIGNED, f);
         })
       )
