@@ -13,7 +13,7 @@ const appState = {
 function createWindow() {
   // Create the browser window.
   const win = new BrowserWindow({
-    width: 1600,
+    width: 800,
     height: 600,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
@@ -85,7 +85,7 @@ function createWindow() {
   win.loadFile('./html/index.html');
 
   // Open the DevTools.
-  win.webContents.openDevTools();
+  // win.webContents.openDevTools();
 }
 
 // This method will be called when Electron has finished
