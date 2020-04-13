@@ -24,8 +24,3 @@ body {
 button[disabled] {
   pointer-events: none;
 }
-
-.disappear {
-  transform: scaleX(0) scaleY(0);
-  transition: transform 0.3s;
-}

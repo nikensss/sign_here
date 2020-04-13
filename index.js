@@ -63,8 +63,12 @@ function createWindow() {
     }
   });
 
-  ipcMain.on(Messages.SIGN_ALL, (event, arg) => {
-    console.log('signing everything');
+  ipcMain.on(Messages.SIGN_ALL, (event, files) => {
+    //remove those files that were discarded in the frontend
+    appState.selectedFiles = appState.selectedFiles.filter((sf) =>
+      files.includes(path.basename(sf))
+    );
+    console.log('signing files', appState.selectedFiles);
     const notary = new Notary();
     Promise.all(
       appState.selectedFiles.map((f) =>
