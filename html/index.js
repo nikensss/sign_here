@@ -24,16 +24,34 @@ $(document).ready(() => {
   window.showCollectedPdfs = function (files) {
     $('#files-list').empty();
     console.log('showing collected files ', files);
+
     files.forEach((f) => {
-      // const fileRow = $('<div/>', {
-      //   class: 'row m-0 px-5'
-      // });
+      const fileRow = $('<div/>', {
+        class: 'row file',
+        id: f
+      });
       const fileCol = $('<div/>', {
-        class: 'mx-auto w-50 alert alert-info',
-        id: f,
+        class: 'col-9 px-2 alert alert-info',
         text: f
       });
-      $('#files-list').append(fileCol);
+      const deleteButtonCol = $('<div/>', {
+        class: 'col-3 px-2'
+      });
+      const deleteButton = $('<button/>', {
+        class: 'alert alert-danger',
+        html: '&times;'
+      });
+      deleteButtonCol.append(deleteButton);
+      fileRow.append(fileCol).append(deleteButtonCol);
+      $('#files-list').append(fileRow);
+      deleteButton.click(function () {
+        $(this)
+          .closest('.row.file')
+          .addClass('disappear')
+          .on('transitionend', function (event) {
+            $(this).remove();
+          });
+      });
     });
   };
 
