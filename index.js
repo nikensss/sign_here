@@ -63,25 +63,36 @@ function createWindow() {
     }
   });
 
-  ipcMain.on(Messages.SIGN_ALL, (event, files) => {
+  ipcMain.on(Messages.SIGN_ALL, async (event, files) => {
     //remove those files that were discarded in the frontend
     appState.selectedFiles = appState.selectedFiles.filter((sf) =>
       files.includes(path.basename(sf))
     );
     console.log('signing files', appState.selectedFiles);
     const notary = new Notary();
-    Promise.all(
-      appState.selectedFiles.map((f) =>
-        notary
+    appState.selectedFiles.forEach(async (f) => {
+      try {
+        console.log(`[index.js] asking Notary to sign ${f}`);
+        await notary
           .sign(f, appState.selectedSignature)
-          .then(() => event.reply(Messages.FILE_SIGNED, path.basename(f)))
-      )
-    )
-      .then(() => {
-        console.log('everything signed');
-        event.reply(Messages.CAN_SIGN);
-      })
-      .catch((e) => console.error(e));
+          .then(() => event.reply(Messages.FILE_SIGNED, path.basename(f)));
+        console.log(`[index.js] Notary should be finished signing ${f}`);
+      } catch (ex) {
+        console.error(ex);
+      }
+    });
+    // Promise.all(
+    //   appState.selectedFiles.map((f) =>
+    //     notary
+    //       .sign(f, appState.selectedSignature)
+    //       .then(() => event.reply(Messages.FILE_SIGNED, path.basename(f)))
+    //   )
+    // )
+    //   .then(() => {
+    //     console.log('everything signed');
+    //     event.reply(Messages.CAN_SIGN);
+    //   })
+    //   .catch((e) => console.error(e));
   });
 
   // and load the index.html of the app.

@@ -17,6 +17,10 @@ body {
   display: none;
 }
 
+.h-94px {
+  height: 94px;
+}
+
 .h-380px {
   height: 380px;
 }
