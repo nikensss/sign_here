@@ -2,14 +2,14 @@ $(document).ready(() => {
   $('#pdf').click(() => {
     console.log('[window] requesting pdfs files');
     window.postMessage({
-      type: 'select-files'
+      type: Messages.SELECT_FILES
     });
   });
 
   $('#signature').click(() => {
     console.log('[window] requesting signature image');
     window.postMessage({
-      type: 'select-signature'
+      type: Messages.SELECT_SIGNATURE
     });
   });
 
@@ -19,28 +19,28 @@ $(document).ready(() => {
       .map((i, e) => $(e).attr('data-basename'))
       .get();
     window.postMessage({
-      type: 'sign-all',
+      type: Messages.SIGN_ALL,
       files: files
     });
     $('#sign-all').attr('disabled', true);
   });
 
-  window.showCollectedPdfs = function (files) {
+  window.showCollectedPdfs = function (pdfs) {
     $('#files-list').empty();
-    console.log('[window] showing collected files ', files);
+    console.log('[window] showing collected files ', pdfs);
 
-    files.forEach((f, i) => {
+    pdfs.forEach((pdf, i) => {
       const collapsibleRow = $('<div/>', {
         class: 'collapse show file',
         id: 'file-' + i,
-        'data-basename': f
+        'data-basename': pdf
       });
       const fileRow = $('<div/>', {
         class: 'row p-3 justify-content-around align-items-center'
       });
       const fileCol = $('<div/>', {
         class: 'col-10 alert alert-info m-0 px-2 ',
-        text: f
+        text: pdf
       });
       const deleteButtonCol = $('<div/>', {
         class: 'col-2 d-flex justify-content-center align-items-center px-2'
@@ -93,4 +93,24 @@ $(document).ready(() => {
       .removeClass('alert-info')
       .addClass('alert-success');
   };
+
+  window.addEventListener('message', (event) => {
+    console.log('[window] received message of type', event.data.type);
+    switch (event.data.type) {
+      case Messages.COLLECTED_PDFS:
+        window.showCollectedPdfs(event.data.pdfs);
+        break;
+      case Messages.COLLECTED_SIGNATURE:
+        window.showCollectedSignature(event.data.signature);
+        break;
+      case Messages.CAN_SIGN:
+        window.enableSignAll();
+        break;
+      case Messages.FILE_SIGNED:
+        window.fileSigned(event.data.file);
+        break;
+      default:
+        console.log('[window] unknown type', event.data.type);
+    }
+  });
 });

@@ -6,10 +6,12 @@ const AppState = require('./classes/AppState');
 
 const appState = new AppState();
 
+ipcMain.on('get-messages', (event) => (event.returnValue = Messages));
+
 function createWindow() {
   // Create the browser window.
   const win = new BrowserWindow({
-    width: 800,
+    width: 1800,
     height: 600,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
@@ -77,29 +79,18 @@ function createWindow() {
           .sign(f, appState.selectedSignature)
           .then(() => event.reply(Messages.FILE_SIGNED, path.basename(f)));
         console.log(`[index.js] Notary should be finished signing ${f}`);
+        event.reply(Messages.CAN_SIGN);
       } catch (ex) {
         console.error(ex);
       }
     });
-    // Promise.all(
-    //   appState.selectedFiles.map((f) =>
-    //     notary
-    //       .sign(f, appState.selectedSignature)
-    //       .then(() => event.reply(Messages.FILE_SIGNED, path.basename(f)))
-    //   )
-    // )
-    //   .then(() => {
-    //     console.log('everything signed');
-    //     event.reply(Messages.CAN_SIGN);
-    //   })
-    //   .catch((e) => console.error(e));
   });
 
   // and load the index.html of the app.
   win.loadFile('./html/index.html');
 
   // Open the DevTools.
-  //win.webContents.openDevTools();
+  win.webContents.openDevTools();
 }
 
 // This method will be called when Electron has finished
