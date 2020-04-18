@@ -37,10 +37,10 @@ function createWindow() {
     if (result.filePaths.length === 0) {
       return;
     }
-    appState.selectedFiles = result.filePaths;
+    appState.files = result.filePaths;
     event.reply(
       Messages.COLLECTED_PDFS,
-      appState.selectedFiles.map((f) => path.basename(f))
+      appState.files.map((f) => path.basename(f))
     );
     if (appState.canSign()) {
       event.reply(Messages.CAN_SIGN);
@@ -61,9 +61,9 @@ function createWindow() {
       return;
     }
     console.log('signature selected', result.filePaths);
-    appState.selectedSignature = result.filePaths[0];
+    appState.signature = result.filePaths[0];
     userData.set('signature', result.filePaths[0]);
-    event.reply(Messages.COLLECTED_SIGNATURE, appState.selectedSignature);
+    event.reply(Messages.COLLECTED_SIGNATURE, appState.signature);
     if (appState.canSign()) {
       event.reply(Messages.CAN_SIGN);
     }
@@ -71,14 +71,12 @@ function createWindow() {
 
   ipcMain.on(Messages.SIGN_ALL, async (event, files) => {
     //remove those files that were discarded in the frontend
-    appState.selectedFiles = appState.selectedFiles.filter((sf) =>
-      files.includes(path.basename(sf))
-    );
-    console.log('signing files', appState.selectedFiles);
+    appState.files = appState.files.filter((sf) => files.includes(path.basename(sf)));
+    console.log('signing files', appState.files);
     const notary = new Notary();
-    for (let file of appState.selectedFiles) {
+    for (let file of appState.files) {
       try {
-        await notary.sign(file, appState.selectedSignature);
+        await notary.sign(file, appState.signature);
         event.reply(Messages.FILE_SIGNED, path.basename(file));
       } catch (ex) {
         console.error(ex);
@@ -90,8 +88,8 @@ function createWindow() {
   ipcMain.on(Messages.LOAD_USER_DATA, (event) => {
     console.log('[main.js] loading user signature');
     if (fs.existsSync(userData.get('signature'))) {
-      appState.selectedSignature = userData.get('signature');
-      event.reply(Messages.COLLECTED_SIGNATURE, appState.selectedSignature);
+      appState.signature = userData.get('signature');
+      event.reply(Messages.COLLECTED_SIGNATURE, appState.signature);
     }
   });
 

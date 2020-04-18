@@ -1,8 +1,8 @@
 class AppState {
   constructor() {
-    this._selectedFiles = [];
+    this._files = [];
     this._isSelectedFiles = false;
-    this._selectedSignature = '';
+    this._signature = '';
     this._isSelectedSignature = false;
   }
 
@@ -14,11 +14,11 @@ class AppState {
     this._isSelectedFiles = value;
   }
 
-  get selectedFiles() {
-    return [...this._selectedFiles];
+  get files() {
+    return [...this._files];
   }
 
-  set selectedFiles(files) {
+  set files(files) {
     if (files.length === 0) {
       this._isSelectedFiles = false;
       throw new Error('No files received');
@@ -28,19 +28,19 @@ class AppState {
       throw new Error('Some files are invalid');
     }
     this._isSelectedFiles = true;
-    this._selectedFiles = [...files];
+    this._files = [...files];
   }
 
-  get selectedSignature() {
-    return this._selectedSignature;
+  get signature() {
+    return this._signature;
   }
 
-  set selectedSignature(signature) {
+  set signature(signature) {
     if (signature === '') {
       throw new Error('Invalid signature');
     }
     this._isSelectedSignature = true;
-    this._selectedSignature = signature;
+    this._signature = signature;
   }
 
   canSign() {
