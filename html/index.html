@@ -12,8 +12,8 @@
       window.module = module;
       module = undefined;
     }
-  </script>
 
+  </script>
   <script src="../node_modules/jquery/dist/jquery.min.js"></script>
   <!-- Latest compiled and minified CSS -->
   <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css" />
@@ -24,31 +24,46 @@
 </head>
 
 <body>
-  <div class="row mb-5 mx-0">
-    <div class="col p-2 d-flex flex-column justify-content-start align-items-center">
-      <div class="d-flex flex-column justify-content-start align-items-center h-94px">
-        <p>¿Dónde está lo que se tiene que firmar?</p>
-        <button id="pdf" type="button" class="btn btn-info my-2 rounded-pill w-75">PDF's</button>
+  <div class="container-fluid d-flex flex-column p-footer vh-100 overflow-hidden">
+    <!-- First row -->
+    <div class="row no-gutters py-2 h-50px">
+      <div class="col d-flex justify-content-center align-items-center">
+        <p class="m-0">¿Dónde está lo que se tiene que firmar?</p>
       </div>
-      <div id="files-list" class="flex-grow-1 w-100 m-0 px-3 ofy-auto">
+      <div class="col d-flex justify-content-center align-items-center">
+        <p class="m-0">¿Dónde está la firma?</p>
       </div>
     </div>
-    <div class="col p-2 d-flex flex-column justify-content-start align-items-center">
-      <div class="d-flex flex-column justify-content-start align-items-center h-94px">
-        <p>¿Dónde está la firma?</p>
+    <!-- Second row -->
+    <div class="row no-gutters py-2 h-70px">
+      <div class="col d-flex justify-content-center align-items-center overflow-hidden">
+        <button id="pdf" type="button" class="btn btn-info my-2 rounded-pill w-75">
+          PDF's
+        </button>
+      </div>
+      <div class="col d-flex justify-content-center align-items-center">
         <button id="signature" type="button" class="btn btn-info my-2 rounded-pill w-75">
           Firma
         </button>
       </div>
-      <div id="signature-view" class="w-50">
+    </div>
+    <!-- Third row -->
+    <div class="row no-gutters py-3 flex-1 overflow-auto">
+      <div class="col d-flex justify-content-center align-items-center mh-100">
+        <div class="overflow-auto mh-100 w-100">
+          <div id="files-list" class="w-100 m-0 px-3"></div>
+        </div>
+      </div>
+      <div class="col d-flex justify-content-center align-items-start">
+        <div id="signature-view" class="w-50"></div>
       </div>
     </div>
-  </div>
-  <div class="fixed-bottom d-flex justify-content-center bg-white">
-    <button id="sign-all" type="button" class="btn btn-info my-2 rounded-pill w-25" disabled>
-      ¡Fírmalo todo!
-    </button>
-  </div>
+    <!-- Sign all button -->
+    <div class="fixed-bottom d-flex justify-content-center bg-white footer-button">
+      <button id="sign-all" type="button" class="btn btn-info my-2 rounded-pill w-25" disabled>
+        ¡Fírmalo todo!
+      </button>
+    </div>
 </body>
 
 </html>

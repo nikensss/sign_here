@@ -76,24 +76,22 @@ function createWindow() {
     );
     console.log('signing files', appState.selectedFiles);
     const notary = new Notary();
-    appState.selectedFiles.forEach(async (f) => {
+    for (let file of appState.selectedFiles) {
       try {
-        console.log(`[main.js] asking Notary to sign ${f}`);
-        await notary
-          .sign(f, appState.selectedSignature)
-          .then(() => event.reply(Messages.FILE_SIGNED, path.basename(f)));
-        console.log(`[main.js] Notary should be finished signing ${f}`);
-        event.reply(Messages.CAN_SIGN);
+        await notary.sign(file, appState.selectedSignature);
+        event.reply(Messages.FILE_SIGNED, path.basename(file));
       } catch (ex) {
         console.error(ex);
       }
-    });
+    }
+    event.reply(Messages.EVERYTHING_SIGNED);
   });
 
   ipcMain.on(Messages.LOAD_USER_DATA, (event) => {
     console.log('[main.js] loading user signature');
     if (fs.existsSync(userData.get('signature'))) {
-      event.reply(Messages.COLLECTED_SIGNATURE, userData.get('signature'));
+      appState.selectedSignature = userData.get('signature');
+      event.reply(Messages.COLLECTED_SIGNATURE, appState.selectedSignature);
     }
   });
 

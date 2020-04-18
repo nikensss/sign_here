@@ -39,7 +39,7 @@ $(document).ready(() => {
         class: 'row p-3 justify-content-around align-items-center'
       });
       const fileCol = $('<div/>', {
-        class: 'col-10 alert alert-info m-0 px-2 ',
+        class: 'col-10 alert alert-info m-0 px-2 text-center',
         text: pdf
       });
       const deleteButtonCol = $('<div/>', {
@@ -108,6 +108,9 @@ $(document).ready(() => {
         break;
       case Messages.FILE_SIGNED:
         window.fileSigned(event.data.file);
+        break;
+      case Messages.EVERYTHING_SIGNED:
+        window.alert('¡Ya está todo firmado!');
         break;
       default:
         console.log('[window] unknown type', event.data.type);

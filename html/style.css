@@ -1,3 +1,7 @@
+:root {
+  --footer-height: 54px;
+}
+
 html,
 body {
   margin: 0;
@@ -9,6 +13,10 @@ body {
   background: white;
 }
 
+.p-footer {
+  padding-bottom: var(--footer-height);
+}
+
 .ofy-auto {
   overflow-y: auto;
 }
@@ -17,12 +25,20 @@ body {
   display: none;
 }
 
-.h-94px {
-  height: 94px;
+.h-50px {
+  height: 50px;
 }
 
-.h-380px {
-  height: 380px;
+.h-70px {
+  height: 70px;
+}
+
+.flex-1 {
+  flex: 1;
+}
+
+.footer-button {
+  height: var(--footer-height);
 }
 
 button[disabled] {
