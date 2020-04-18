@@ -18,9 +18,15 @@ class Notary {
       const pngDims = pngImage.scale(0.06);
 
       const pages = pdf.getPages();
-      if (pages.length < 1) {
+      if (pages.length < 2) {
         console.log(`No second page at ${file}; skipping...`);
-        return Promise.resolve();
+        return {
+          status: 'error',
+          ok: false,
+          error: "file doesn't have a second page",
+          originalFile: file,
+          outputFile: ''
+        };
       }
 
       const page = pages[1];
@@ -33,9 +39,16 @@ class Notary {
       });
 
       const pdfBytesSaved = await pdf.save();
-      return fs
-        .writeFile(file.replace('.pdf', '_firmat.pdf'), pdfBytesSaved)
-        .then(() => console.log('[Notary] done signing ', file));
+      await fs.writeFile(file.replace('.pdf', '_firmat.pdf'), pdfBytesSaved);
+      console.log('[Notary] done signing ', file);
+
+      return {
+        status: 'ok',
+        ok: true,
+        error: '',
+        originalFile: file,
+        outputFile: file.replace('.pdf', '_firmat.pdf')
+      };
     } catch (ex) {
       console.error('Exception recorded', ex);
     }

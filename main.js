@@ -2,14 +2,14 @@ const fs = require('fs');
 const path = require('path');
 const { app, BrowserWindow, dialog, ipcMain } = require('electron');
 const Notary = require('./classes/Notary');
-const Messages = require('./classes/Messages');
+const Message = require('./classes/Message');
 const AppState = require('./classes/AppState');
 const UserData = require('./classes/UserData');
 
 const appState = new AppState();
 const userData = new UserData();
 
-ipcMain.on('get-messages', (event) => (event.returnValue = Messages));
+ipcMain.on('get-messages', (event) => (event.returnValue = Message));
 
 function createWindow() {
   // Create the browser window.
@@ -25,7 +25,7 @@ function createWindow() {
     }
   });
 
-  ipcMain.on(Messages.SELECT_FILES, async (event, arg) => {
+  ipcMain.on(Message.SELECT_FILES, async (event, arg) => {
     const result = await dialog.showOpenDialog(win, {
       properties: ['openFile', 'multiSelections'],
       filters: [
@@ -39,15 +39,15 @@ function createWindow() {
     }
     appState.files = result.filePaths;
     event.reply(
-      Messages.COLLECTED_PDFS,
+      Message.COLLECTED_PDFS,
       appState.files.map((f) => path.basename(f))
     );
     if (appState.canSign()) {
-      event.reply(Messages.CAN_SIGN);
+      event.reply(Message.CAN_SIGN);
     }
   });
 
-  ipcMain.on(Messages.SELECT_SIGNATURE, async (event, arg) => {
+  ipcMain.on(Message.SELECT_SIGNATURE, async (event, arg) => {
     const result = await dialog.showOpenDialog(win, {
       title: 'The title',
       properties: ['openFile'],
@@ -63,33 +63,38 @@ function createWindow() {
     console.log('signature selected', result.filePaths);
     appState.signature = result.filePaths[0];
     userData.set('signature', result.filePaths[0]);
-    event.reply(Messages.COLLECTED_SIGNATURE, appState.signature);
+    event.reply(Message.COLLECTED_SIGNATURE, appState.signature);
     if (appState.canSign()) {
-      event.reply(Messages.CAN_SIGN);
+      event.reply(Message.CAN_SIGN);
     }
   });
 
-  ipcMain.on(Messages.SIGN_ALL, async (event, files) => {
+  ipcMain.on(Message.SIGN_ALL, async (event, files) => {
     //remove those files that were discarded in the frontend
     appState.files = appState.files.filter((sf) => files.includes(path.basename(sf)));
     console.log('signing files', appState.files);
     const notary = new Notary();
     for (let file of appState.files) {
       try {
-        await notary.sign(file, appState.signature);
-        event.reply(Messages.FILE_SIGNED, path.basename(file));
+        let result = await notary.sign(file, appState.signature);
+        if (result.ok) {
+          event.reply(Message.FILE_SIGNED, path.basename(result.originalFile));
+        } else {
+          console.log(`couldn't sign ${result.originalFile}; reason: ${result.error}`);
+          event.reply(Message.FILE_NOT_SIGNED, path.basename(result.originalFile), result.error);
+        }
       } catch (ex) {
         console.error(ex);
       }
     }
-    event.reply(Messages.EVERYTHING_SIGNED);
+    event.reply(Message.EVERYTHING_SIGNED);
   });
 
-  ipcMain.on(Messages.LOAD_USER_DATA, (event) => {
+  ipcMain.on(Message.LOAD_USER_DATA, (event) => {
     console.log('[main.js] loading user signature');
     if (fs.existsSync(userData.get('signature'))) {
       appState.signature = userData.get('signature');
-      event.reply(Messages.COLLECTED_SIGNATURE, appState.signature);
+      event.reply(Message.COLLECTED_SIGNATURE, appState.signature);
     }
   });
 

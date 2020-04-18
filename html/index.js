@@ -2,14 +2,14 @@ $(document).ready(() => {
   $('#pdf').click(() => {
     console.log('[window] requesting pdfs files');
     window.postMessage({
-      type: Messages.SELECT_FILES
+      type: Message.SELECT_FILES
     });
   });
 
   $('#signature').click(() => {
     console.log('[window] requesting signature image');
     window.postMessage({
-      type: Messages.SELECT_SIGNATURE
+      type: Message.SELECT_SIGNATURE
     });
   });
 
@@ -19,7 +19,7 @@ $(document).ready(() => {
       .map((i, e) => $(e).attr('data-basename'))
       .get();
     window.postMessage({
-      type: Messages.SIGN_ALL,
+      type: Message.SIGN_ALL,
       files: files
     });
     $('#sign-all').attr('disabled', true);
@@ -94,22 +94,34 @@ $(document).ready(() => {
       .addClass('alert-success');
   };
 
+  window.fileNotSigned = function (file, reason) {
+    console.log('[window] file not signed and reason', file, reason);
+    $('.show.file[data-basename="' + file + '"]')
+      .children('.row')
+      .children('.alert')
+      .removeClass('alert-info')
+      .addClass('alert-danger');
+  };
+
   window.addEventListener('message', (event) => {
     console.log('[window] received message of type', event.data.type);
     switch (event.data.type) {
-      case Messages.COLLECTED_PDFS:
+      case Message.COLLECTED_PDFS:
         window.showCollectedPdfs(event.data.pdfs);
         break;
-      case Messages.COLLECTED_SIGNATURE:
+      case Message.COLLECTED_SIGNATURE:
         window.showCollectedSignature(event.data.signature);
         break;
-      case Messages.CAN_SIGN:
+      case Message.CAN_SIGN:
         window.enableSignAll();
         break;
-      case Messages.FILE_SIGNED:
+      case Message.FILE_SIGNED:
         window.fileSigned(event.data.file);
         break;
-      case Messages.EVERYTHING_SIGNED:
+      case Message.FILE_NOT_SIGNED:
+        window.fileNotSigned(event.data.file, event.data.reason);
+        break;
+      case Message.EVERYTHING_SIGNED:
         window.alert('¡Ya está todo firmado!');
         break;
       default:
@@ -118,6 +130,6 @@ $(document).ready(() => {
   });
 
   window.postMessage({
-    type: Messages.LOAD_USER_DATA
+    type: Message.LOAD_USER_DATA
   });
 });
