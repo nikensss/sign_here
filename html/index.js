@@ -126,9 +126,6 @@ $(document).ready(() => {
       case Message.FILE_NOT_SIGNED:
         window.fileNotSigned(event.data.file, event.data.reason);
         break;
-      case Message.EVERYTHING_SIGNED:
-        window.alert('¡Ya está todo firmado!');
-        break;
       default:
         console.log('[window] unknown type', event.data.type);
     }

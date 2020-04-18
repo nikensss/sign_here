@@ -34,17 +34,16 @@ function createWindow() {
       ]
     });
     console.log('files selected', result.filePaths);
-    if (result.filePaths.length === 0) {
-      return;
-    }
+
+    if (result.filePaths.length === 0) return;
+
     appState.files = result.filePaths;
     event.reply(
       Message.COLLECTED_PDFS,
       appState.files.map((f) => path.basename(f))
     );
-    if (appState.canSign()) {
-      event.reply(Message.CAN_SIGN);
-    }
+
+    if (appState.canSign()) event.reply(Message.CAN_SIGN);
   });
 
   ipcMain.on(Message.SELECT_SIGNATURE, async (event, arg) => {
@@ -60,13 +59,13 @@ function createWindow() {
     if (result.filePaths.length === 0 || result.filePaths[0].length === 0) {
       return;
     }
+
     console.log('signature selected', result.filePaths);
+
     appState.signature = result.filePaths[0];
     userData.set('signature', result.filePaths[0]);
     event.reply(Message.COLLECTED_SIGNATURE, appState.signature);
-    if (appState.canSign()) {
-      event.reply(Message.CAN_SIGN);
-    }
+    if (appState.canSign()) event.reply(Message.CAN_SIGN);
   });
 
   ipcMain.on(Message.SIGN_ALL, async (event, files) => {
@@ -74,6 +73,7 @@ function createWindow() {
     appState.files = appState.files.filter((sf) => files.includes(path.basename(sf)));
     console.log('signing files', appState.files);
     const notary = new Notary();
+
     for (let file of appState.files) {
       try {
         let result = await notary.sign(file, appState.signature);
@@ -87,7 +87,13 @@ function createWindow() {
         console.error(ex);
       }
     }
-    event.reply(Message.EVERYTHING_SIGNED);
+    await dialog.showMessageBox({
+      type: 'info',
+      button: ['Ok'],
+      defaultId: 0,
+      title: 'Don Notario',
+      message: '¡Ya está todo firmado!'
+    });
   });
 
   ipcMain.on(Message.LOAD_USER_DATA, (event) => {

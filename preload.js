@@ -45,13 +45,6 @@ process.once('loaded', () => {
     });
   });
 
-  ipcRenderer.on(Message.EVERYTHING_SIGNED, (event, file) => {
-    console.log('[preload - ipcRenderer] received message "everything signed"');
-    window.postMessage({
-      type: Message.EVERYTHING_SIGNED
-    });
-  });
-
   window.addEventListener('message', (event) => {
     if (!(event.origin === 'file://' && event.source === window)) {
       console.log('[preload] ignoring message of type', event.data.type);
