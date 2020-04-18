@@ -1,8 +1,8 @@
 {
   "name": "sign_here",
-  "version": "0.9.0",
+  "version": "1.0.0",
   "description": "Signs the selected PDF's with the provided image. This image should represent a hand signature.",
-  "main": "index.js",
+  "main": "main.js",
   "scripts": {
     "start": "electron-forge start",
     "package": "electron-forge package",

@@ -52,6 +52,9 @@ process.once('loaded', () => {
       case Messages.SIGN_ALL:
         ipcRenderer.send(Messages.SIGN_ALL, event.data.files);
         break;
+      case Messages.LOAD_USER_DATA:
+        ipcRenderer.send(Messages.LOAD_USER_DATA);
+        break;
       default:
         console.log('[preload] unknown type: ', event.data.type);
     }

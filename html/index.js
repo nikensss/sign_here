@@ -113,4 +113,8 @@ $(document).ready(() => {
         console.log('[window] unknown type', event.data.type);
     }
   });
+
+  window.postMessage({
+    type: Messages.LOAD_USER_DATA
+  });
 });

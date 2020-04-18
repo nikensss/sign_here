@@ -5,7 +5,8 @@ const Messages = {
   COLLECTED_SIGNATURE: 'collected-signature',
   CAN_SIGN: 'can-sign',
   SIGN_ALL: 'sign-all',
-  FILE_SIGNED: 'file-signed'
+  FILE_SIGNED: 'file-signed',
+  LOAD_USER_DATA: 'load-user-data'
 };
 
 module.exports = Messages;
