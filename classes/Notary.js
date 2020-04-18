@@ -51,6 +51,13 @@ class Notary {
       };
     } catch (ex) {
       console.error('Exception recorded', ex);
+      return {
+        status: 'error',
+        ok: false,
+        error: ex,
+        originalFile: file,
+        outputFile: ''
+      };
     }
   }
 }

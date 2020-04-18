@@ -1,4 +1,6 @@
 $(document).ready(() => {
+  $('[data-toggle="tooltip"]').tooltip();
+
   $('#pdf').click(() => {
     console.log('[window] requesting pdfs files');
     window.postMessage({
@@ -100,7 +102,10 @@ $(document).ready(() => {
       .children('.row')
       .children('.alert')
       .removeClass('alert-info')
-      .addClass('alert-danger');
+      .addClass('alert-danger')
+      .attr('data-toggle', 'tooltip')
+      .attr('data-placement', 'bottom')
+      .attr('title', reason);
   };
 
   window.addEventListener('message', (event) => {
