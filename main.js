@@ -8,14 +8,20 @@ const UserData = require('./classes/UserData');
 
 const appState = new AppState();
 const userData = new UserData();
+const platformSpecificIcon = () => {
+  if (process.platform === 'win32') return 'icon.ico';
+  if (process.platform === 'darwin') return 'icon.icns';
+  return 'icon.png';
+};
 
 ipcMain.on('get-messages', (event) => (event.returnValue = Message));
 
 function createWindow() {
   // Create the browser window.
   const win = new BrowserWindow({
-    width: 1800,
+    width: 800,
     height: 600,
+    icon: path.join(__dirname, 'icon', platformSpecificIcon()),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: false,
@@ -27,6 +33,7 @@ function createWindow() {
 
   ipcMain.on(Message.SELECT_FILES, async (event, arg) => {
     const result = await dialog.showOpenDialog(win, {
+      title: "Selecciona los PDF's",
       properties: ['openFile', 'multiSelections'],
       filters: [
         { name: 'PDF', extensions: ['pdf'] },
@@ -48,7 +55,7 @@ function createWindow() {
 
   ipcMain.on(Message.SELECT_SIGNATURE, async (event, arg) => {
     const result = await dialog.showOpenDialog(win, {
-      title: 'The title',
+      title: 'Selecciona la imagen de la firma',
       properties: ['openFile'],
       filters: [
         { name: 'PNG', extensions: ['png'] },
@@ -108,7 +115,7 @@ function createWindow() {
   win.loadFile('./html/index.html');
 
   // Open the DevTools.
-  win.webContents.openDevTools();
+  //win.webContents.openDevTools();
 }
 
 // This method will be called when Electron has finished
