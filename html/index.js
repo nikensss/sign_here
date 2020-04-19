@@ -1,4 +1,8 @@
 $(document).ready(() => {
+  const state = {
+    totalFiles: 0
+  };
+
   $('[data-toggle="tooltip"]').tooltip();
 
   $('#pdf').click(() => {
@@ -16,7 +20,8 @@ $(document).ready(() => {
   });
 
   $('#sign-all').click(() => {
-    console.log('[window] requesting signature stamping');
+    state.totalFiles = $('.show.file').length;
+    console.log(`[window] requesting signature stamping for ${state.totalFiles} files`);
     const files = $('.file.show')
       .map((i, e) => $(e).attr('data-basename'))
       .get();
@@ -80,7 +85,7 @@ $(document).ready(() => {
   };
 
   window.enableSignAll = function () {
-    $('#sign-all').attr('disabled', false);
+    $('#sign-all').attr('disabled', false).css('background', '');
   };
 
   window.disableSignAll = function () {
@@ -94,6 +99,7 @@ $(document).ready(() => {
       .children('.alert')
       .removeClass('alert-info')
       .addClass('alert-success');
+    window.updateProgressBar();
   };
 
   window.fileNotSigned = function (file, reason) {
@@ -106,6 +112,15 @@ $(document).ready(() => {
       .attr('data-toggle', 'tooltip')
       .attr('data-placement', 'bottom')
       .attr('title', reason);
+    window.updateProgressBar();
+  };
+
+  window.updateProgressBar = function () {
+    const percentageComplete = (($('.alert-success').length + $('.alert-danger').length) / state.totalFiles) * 100;
+    const infoBgColor = $('.btn-info').css('background-color');
+    const successBgColor = $('.alert-success').css('background-color');
+    const newBg = `linear-gradient(90deg, ${successBgColor} 0%, ${successBgColor} ${percentageComplete}%, ${infoBgColor} ${percentageComplete}%, ${infoBgColor} 100%)`;
+    $('#sign-all').css('background', newBg);
   };
 
   window.addEventListener('message', (event) => {
