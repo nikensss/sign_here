@@ -1,8 +1,11 @@
 const fs = require('fs').promises;
 const PDFDocument = require('pdf-lib').PDFDocument;
+const Holmes = require('./Holmes');
 
 class Notary {
-  constructor() {}
+  constructor() {
+    this.holmes = new Holmes();
+  }
 
   async sign(file, signature) {
     console.log('[Notary] signing ', file);
@@ -12,28 +15,29 @@ class Notary {
 
       const pdfBytes = await fs.readFile(file);
       const pdf = await PDFDocument.load(pdfBytes);
+      const signatureLocation = await this.holmes.find('Nom i cognoms', pdfBytes);
 
-      const pngImage = await pdf.embedPng(pngImageBytes);
-
-      const pngDims = pngImage.scale(0.06);
-
-      const pages = pdf.getPages();
-      if (pages.length < 2) {
-        console.log(`No second page at ${file}; skipping...`);
+      if (!signatureLocation.found) {
         return {
           status: 'error',
           ok: false,
-          error: "file doesn't have a second page",
+          error: 'target text could not be found',
           originalFile: file,
           outputFile: ''
         };
       }
 
-      const page = pages[1];
+      console.log('[Notary] signature location found at', signatureLocation);
+      const pngImage = await pdf.embedPng(pngImageBytes);
+
+      const pngDims = pngImage.scale(0.06);
+
+      const pages = pdf.getPages();
+      const page = pages[signatureLocation.page];
 
       page.drawImage(pngImage, {
-        x: (3 * page.getWidth()) / 7,
-        y: (5.21 * page.getHeight()) / 14,
+        x: signatureLocation.x + signatureLocation.width,
+        y: signatureLocation.y - pngDims.height / 2,
         width: pngDims.width,
         height: pngDims.height
       });
@@ -60,6 +64,8 @@ class Notary {
       };
     }
   }
+
+  findSignatureLocation(file) {}
 }
 
 module.exports = Notary;

@@ -1,6 +1,6 @@
 {
   "name": "sign_here",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Signs the selected PDF's with the provided image. This image should represent a hand signature.",
   "main": "main.js",
   "scripts": {
@@ -31,7 +31,8 @@
     "dotenv": "^8.2.0",
     "electron-squirrel-startup": "^1.0.0",
     "jquery": "^3.4.1",
-    "pdf-lib": "^1.4.1"
+    "pdf-lib": "^1.4.1",
+    "pdf-parse": "^1.1.1"
   },
   "config": {
     "forge": "config.js"
