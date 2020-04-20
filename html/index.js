@@ -5,6 +5,9 @@ $(document).ready(() => {
 
   $('[data-toggle="tooltip"]').tooltip();
 
+  //make the progress bar container as tall as the #sign-all button
+  $('.progress-wrapper').css('height', $('#sign-all').css('height'));
+
   $('#pdf').click(() => {
     console.log('[window] requesting pdfs files');
     window.postMessage({
@@ -30,6 +33,8 @@ $(document).ready(() => {
       files: files
     });
     $('#sign-all').attr('disabled', true);
+    $('.progress-wrapper').removeClass('invisible');
+    $('.progress-bar').css('width', '0%');
   });
 
   window.showCollectedPdfs = function (pdfs) {
@@ -85,11 +90,15 @@ $(document).ready(() => {
   };
 
   window.enableSignAll = function () {
-    $('#sign-all').attr('disabled', false).css('background', '');
+    $('#sign-all').attr('disabled', false);
+    $('.progress-wrapper').addClass('invisible');
+    $('.progress-bar').css('width', '0%');
   };
 
   window.disableSignAll = function () {
     $('#sign-all').attr('disabled', true);
+    $('.progress-wrapper').removeClass('invisible');
+    $('.progress-bar').css('width', '0%');
   };
 
   window.fileSigned = function (file) {
@@ -117,10 +126,10 @@ $(document).ready(() => {
 
   window.updateProgressBar = function () {
     const percentageComplete = (($('.alert-success').length + $('.alert-danger').length) / state.totalFiles) * 100;
-    const infoBgColor = $('.btn-info').css('background-color');
-    const successBgColor = $('.alert-success').css('background-color');
-    const newBg = `linear-gradient(90deg, ${successBgColor} 0%, ${successBgColor} ${percentageComplete}%, ${infoBgColor} ${percentageComplete}%, ${infoBgColor} 100%)`;
-    $('#sign-all').css('background', newBg);
+    $('.progress-bar').css('width', percentageComplete + '%');
+    if (percentageComplete === 100) {
+      $('.progress-bar').removeClass('progress-bar-animated');
+    }
   };
 
   window.addEventListener('message', (event) => {

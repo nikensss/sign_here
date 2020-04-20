@@ -59,11 +59,19 @@
         <div id="signature-view" class="w-50"></div>
       </div>
     </div>
-    <!-- Sign all button -->
-    <div class="fixed-bottom d-flex justify-content-center bg-white footer-button">
-      <button id="sign-all" type="button" class="btn btn-info my-2 rounded-pill w-25" disabled>
+    <!-- Signing status -->
+    <div class="fixed-bottom d-flex justify-content-center bg-white footer-button py-2">
+      <!-- #sign-all button -->
+      <button id="sign-all" type="button" class="btn btn-info rounded-pill w-25 position-absolute" disabled>
         ¡Fírmalo todo!
       </button>
+      <!-- signing progress bar -->
+      <div class="rounded-pill w-25 position-absolute invisible progress-wrapper">
+        <div class="progress rounded-pill h-100">
+          <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar">
+          </div>
+        </div>
+      </div>
     </div>
 </body>
 
