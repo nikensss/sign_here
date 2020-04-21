@@ -19,7 +19,7 @@ ipcMain.on('get-messages', (event) => (event.returnValue = Message));
 function createWindow() {
   // Create the browser window.
   const win = new BrowserWindow({
-    width: 1800,
+    width: 800,
     height: 600,
     icon: path.join(__dirname, 'icon', platformSpecificIcon()),
     webPreferences: {
@@ -115,7 +115,7 @@ function createWindow() {
   win.loadFile('./html/index.html');
 
   // Open the DevTools.
-  win.webContents.openDevTools();
+  //win.webContents.openDevTools();
 }
 
 // This method will be called when Electron has finished
