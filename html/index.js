@@ -3,6 +3,10 @@ $(document).ready(() => {
     totalFiles: 0
   };
 
+  const painter = new DaVinci($('.progress-bar'));
+  const green = 'var(--green)';
+  const red = 'var(--red)';
+
   $('[data-toggle="tooltip"]').tooltip();
 
   //make the progress bar container as tall as the #sign-all button
@@ -92,13 +96,13 @@ $(document).ready(() => {
   window.enableSignAll = function () {
     $('#sign-all').attr('disabled', false);
     $('.progress-wrapper').addClass('invisible');
-    $('.progress-bar').css('width', '0%');
+    painter.resetCanvas();
   };
 
   window.disableSignAll = function () {
     $('#sign-all').attr('disabled', true);
     $('.progress-wrapper').removeClass('invisible');
-    $('.progress-bar').css('width', '0%');
+    painter.resetCanvas();
   };
 
   window.fileSigned = function (file) {
@@ -108,7 +112,7 @@ $(document).ready(() => {
       .children('.alert')
       .removeClass('alert-info')
       .addClass('alert-success');
-    window.updateProgressBar();
+    window.updateProgressBar(green);
   };
 
   window.fileNotSigned = function (file, reason) {
@@ -121,15 +125,13 @@ $(document).ready(() => {
       .attr('data-toggle', 'tooltip')
       .attr('data-placement', 'bottom')
       .attr('title', reason);
-    window.updateProgressBar();
+    window.updateProgressBar(red);
   };
 
-  window.updateProgressBar = function () {
+  window.updateProgressBar = function (color) {
     const percentageComplete = (($('.alert-success').length + $('.alert-danger').length) / state.totalFiles) * 100;
-    $('.progress-bar').css('width', percentageComplete + '%');
-    if (percentageComplete === 100) {
-      $('.progress-bar').removeClass('progress-bar-animated');
-    }
+    const step = (1 / state.totalFiles) * 100;
+    painter.addProgressStrip(color, percentageComplete - step + '%', percentageComplete + '%');
   };
 
   window.addEventListener('message', (event) => {

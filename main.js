@@ -86,9 +86,11 @@ function createWindow() {
         let result = await notary.sign(file, appState.signature);
         if (result.ok) {
           event.reply(Message.FILE_SIGNED, path.basename(result.originalFile));
+          appState.addSuccess();
         } else {
           console.log(`couldn't sign ${result.originalFile}; reason: ${result.error}`);
           event.reply(Message.FILE_NOT_SIGNED, path.basename(result.originalFile), result.error);
+          appState.addFail();
         }
       } catch (ex) {
         console.error(ex);
@@ -99,7 +101,8 @@ function createWindow() {
       button: ['Ok'],
       defaultId: 0,
       title: 'Don Notario',
-      message: '¡Ya está todo firmado!'
+      message: '¡Me voy a desayunar!',
+      detail: `Firmados correctamente: ${appState.successSigns}\nNo firmados: ${appState.failedSigns}`
     });
   });
 

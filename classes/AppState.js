@@ -4,6 +4,24 @@ class AppState {
     this._isSelectedFiles = false;
     this._signature = '';
     this._isSelectedSignature = false;
+    this._successSigns = 0;
+    this._failedSigns = 0;
+  }
+
+  get successSigns() {
+    return this._successSigns;
+  }
+
+  addSuccess() {
+    this._successSigns += 1;
+  }
+
+  get failedSigns() {
+    return this._failedSigns;
+  }
+
+  addFail() {
+    this._failedSigns += 1;
   }
 
   get isSelectedFiles() {
@@ -29,6 +47,8 @@ class AppState {
     }
     this._isSelectedFiles = true;
     this._files = [...files];
+    this._successSigns = 0;
+    this._failedSigns = 0;
   }
 
   get signature() {
