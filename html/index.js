@@ -3,7 +3,7 @@ $(document).ready(() => {
     totalFiles: 0
   };
 
-  const painter = new DaVinci($('.progress-bar'));
+  const leonardo = new DaVinci($('.progress-bar'));
   const green = 'var(--green)';
   const red = 'var(--red)';
 
@@ -96,13 +96,15 @@ $(document).ready(() => {
   window.enableSignAll = function () {
     $('#sign-all').attr('disabled', false);
     $('.progress-wrapper').addClass('invisible');
-    painter.resetCanvas();
+    leonardo.resetCanvas();
+    leonardo.draw();
   };
 
   window.disableSignAll = function () {
     $('#sign-all').attr('disabled', true);
     $('.progress-wrapper').removeClass('invisible');
-    painter.resetCanvas();
+    leonardo.resetCanvas();
+    leonardo.draw();
   };
 
   window.fileSigned = function (file) {
@@ -129,9 +131,11 @@ $(document).ready(() => {
   };
 
   window.updateProgressBar = function (color) {
-    const percentageComplete = (($('.alert-success').length + $('.alert-danger').length) / state.totalFiles) * 100;
+    const percentageComplete =
+      (($('.alert-success').length + $('.alert-danger').length) / state.totalFiles) * 100;
     const step = (1 / state.totalFiles) * 100;
-    painter.addProgressStrip(color, percentageComplete - step + '%', percentageComplete + '%');
+    leonardo.addProgressStripe(color, percentageComplete - step + '%', percentageComplete + '%');
+    leonardo.draw();
   };
 
   window.addEventListener('message', (event) => {

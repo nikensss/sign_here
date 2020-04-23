@@ -1,68 +1,47 @@
-const DEFAULT_BACKGROUND = 'rgb(200, 200, 200)';
-
-class StripeComponent {
-  constructor(color, position) {
-    this._color = color;
-    this._position = position;
-  }
-
-  get color() {
-    return this._color;
-  }
-
-  get position() {
-    return this._position;
-  }
-
-  set position(p) {
-    this._position = p;
-  }
-
-  toString() {
-    return `${this.color} ${this.position}`;
-  }
-}
-
-class Stripe {
-  constructor(start, end) {
-    this._start = start;
-    this._end = end;
-  }
-
-  static getDefaultStripes() {
-    return new Stripe(new StripeComponent(DEFAULT_BACKGROUND, '0%'), new StripeComponent(DEFAULT_BACKGROUND, '100%'));
-  }
-
-  get start() {
-    return this._start;
-  }
-
-  get end() {
-    return this._end;
-  }
-
-  toString() {
-    return `${this.start.toString()}, ${this.end.toString()}`;
-  }
-}
-
+/**
+ * The DaVinci class is responsible for painting
+ * the progress bar as a series of stripes.
+ * Each stripe can be of different colors and widths.
+ * The stripes should be of the class Stripe.
+ *
+ * It will use the HTML entity defined by the input
+ * canvas element (must be a jQuery object) and it will
+ * change its background property.
+ */
 class DaVinci {
-  constructor(target) {
-    this.target = target;
+  constructor(canvas) {
+    this.canvas = canvas;
     this.stripes = [Stripe.getDefaultStripes()];
   }
 
+  /**
+   * Returns the color section to be used in the linea-gradient
+   * function of CSS. Converts all the stripes to the required
+   * string format for proper visualization.
+   *
+   * @return {string} The palette to be painted.
+   */
   getPalette() {
-    console.log('[DaVinci] palette', this.stripes.map((s) => `${s.toString()}`).join(','));
     return this.stripes.map((s) => `${s.toString()}`).join(',');
   }
 
+  /**
+   * Resets the stripes to the default stripes defined in
+   * Stripe#getDefaultStripes.
+   */
   resetCanvas() {
     this.stripes = [Stripe.getDefaultStripes()];
-    this.draw();
   }
 
-  addProgressStrip(color, start, end) {
+  /**
+   * Creates a new stripe. It will be visible after the next
+   * DaVinci#draw.
+   *
+   * @param {string} color the color of the new stripe
+   * @param {string} start the starting position
+   * @param {string} end  the end position
+   */
+  addProgressStripe(color, start, end) {
     const stripe = new Stripe(new StripeComponent(color, start), new StripeComponent(color, end));
     const finalStripe = this.stripes.pop();
 
@@ -70,11 +49,9 @@ class DaVinci {
 
     this.stripes.push(stripe);
     this.stripes.push(finalStripe);
-    this.draw();
   }
 
   draw() {
-    console.log('[DaVinci] drawing on target', this.target);
-    this.target.css('background', `linear-gradient(90deg, ${this.getPalette()})`);
+    this.canvas.css('background', `linear-gradient(90deg, ${this.getPalette()})`);
   }
 }
