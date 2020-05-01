@@ -7,6 +7,7 @@ $(document).ready(() => {
   const green = 'var(--green)';
   const red = 'var(--red)';
 
+  //enables the use of tooltips
   $('[data-toggle="tooltip"]').tooltip();
 
   //make the progress bar container as tall as the #sign-all button
@@ -131,8 +132,7 @@ $(document).ready(() => {
   };
 
   window.updateProgressBar = function (color) {
-    const percentageComplete =
-      (($('.alert-success').length + $('.alert-danger').length) / state.totalFiles) * 100;
+    const percentageComplete = (($('.alert-success').length + $('.alert-danger').length) / state.totalFiles) * 100;
     const step = (1 / state.totalFiles) * 100;
     leonardo.addProgressStripe(color, percentageComplete - step + '%', percentageComplete + '%');
     leonardo.draw();
