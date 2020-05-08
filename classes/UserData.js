@@ -1,12 +1,13 @@
 const fs = require('fs');
 const path = require('path');
 const { app } = require('electron');
+const chalk = require('chalk');
 
 class UserData {
   constructor() {
     this.fileName = 'config.json';
     this.filePath = path.join(app.getPath('userData'), this.fileName);
-    console.log('[UserData] file path', this.filePath);
+    console.log(chalk.magenta('[UserData] file path'), this.filePath);
     this.data = this.load();
   }
 
@@ -20,6 +21,7 @@ class UserData {
   }
 
   save() {
+    console.log(chalk.magenta('[UserData] saving settings'));
     fs.writeFileSync(this.filePath, JSON.stringify(this.data));
   }
 
@@ -29,6 +31,7 @@ class UserData {
 
   set(key, value) {
     this.data[key] = value;
+    console.log(chalk.magenta(`[UserData] setting '${key}' to '${value}'`));
     this.save();
   }
 }
