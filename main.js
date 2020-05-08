@@ -1,6 +1,8 @@
 const fs = require('fs');
 const path = require('path');
 const { app, BrowserWindow, dialog, ipcMain } = require('electron');
+const chalk = require('chalk');
+
 const Notary = require('./classes/Notary');
 const Message = require('./classes/Message');
 const AppState = require('./classes/AppState');
@@ -8,7 +10,7 @@ const UserData = require('./classes/UserData');
 
 const appState = new AppState();
 const userData = new UserData();
-const platformSpecificIcon = () => {
+const getPlatformSpecificIcon = () => {
   if (process.platform === 'win32') return 'icon.ico';
   if (process.platform === 'darwin') return 'icon.icns';
   return 'icon.png';
@@ -21,7 +23,7 @@ function createWindow() {
   const win = new BrowserWindow({
     width: 800,
     height: 600,
-    icon: path.join(__dirname, 'icon', platformSpecificIcon()),
+    icon: path.join(__dirname, 'icon', getPlatformSpecificIcon()),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: false,
@@ -40,7 +42,7 @@ function createWindow() {
         { name: 'All Files', extensions: ['*'] }
       ]
     });
-    console.log('files selected', result.filePaths);
+    console.log(chalk.blue('[main.js] files selected'), result.filePaths);
 
     if (result.filePaths.length === 0) return;
 
@@ -67,7 +69,7 @@ function createWindow() {
       return;
     }
 
-    console.log('signature selected', result.filePaths);
+    console.log(chalk.blue('[main.js] signature selected'), result.filePaths);
 
     appState.signature = result.filePaths[0];
     userData.set('signature', result.filePaths[0]);
@@ -78,7 +80,7 @@ function createWindow() {
   ipcMain.on(Message.SIGN_ALL, async (event, files) => {
     //remove those files that were discarded in the frontend
     appState.files = appState.files.filter((sf) => files.includes(path.basename(sf)));
-    console.log('signing files', appState.files);
+    console.log(chalk.blue('[main.js] signing files'), appState.files);
     const notary = new Notary();
 
     for (let file of appState.files) {
@@ -88,7 +90,7 @@ function createWindow() {
           event.reply(Message.FILE_SIGNED, path.basename(result.originalFile));
           appState.addSuccess();
         } else {
-          console.log(`couldn't sign ${result.originalFile}; reason: ${result.error}`);
+          console.log(chalk.red(`[main.js] couldn't sign ${result.originalFile}; reason: ${result.error}`));
           event.reply(Message.FILE_NOT_SIGNED, path.basename(result.originalFile), result.error);
           appState.addFail();
         }
@@ -107,7 +109,7 @@ function createWindow() {
   });
 
   ipcMain.on(Message.LOAD_USER_DATA, (event) => {
-    console.log('[main.js] loading user signature');
+    console.log(chalk.blue('[main.js] loading user signature'));
     if (fs.existsSync(userData.get('signature'))) {
       appState.signature = userData.get('signature');
       event.reply(Message.COLLECTED_SIGNATURE, appState.signature);

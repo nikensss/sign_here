@@ -1,6 +1,7 @@
 const fs = require('fs').promises;
 const PDFDocument = require('pdf-lib').PDFDocument;
 const Holmes = require('./Holmes');
+const chalk = require('chalk');
 
 class Notary {
   constructor() {
@@ -8,8 +9,8 @@ class Notary {
   }
 
   async sign(file, signature) {
-    console.log('[Notary] signing ', file);
-    console.log('[Notary] signing with ', signature);
+    console.log(chalk.green('[Notary] signing '), file);
+    console.log(chalk.green('[Notary] signing with '), signature);
     try {
       const pngImageBytes = await fs.readFile(signature);
 
@@ -27,7 +28,7 @@ class Notary {
         };
       }
 
-      console.log('[Notary] signature location found at', signatureLocation);
+      console.log(chalk.green('[Notary] signature location found at'), signatureLocation);
       const pngImage = await pdf.embedPng(pngImageBytes);
 
       const pngDims = pngImage.scale(0.06);
@@ -44,7 +45,7 @@ class Notary {
 
       const pdfBytesSaved = await pdf.save();
       await fs.writeFile(file.replace('.pdf', '_firmat.pdf'), pdfBytesSaved);
-      console.log('[Notary] done signing ', file);
+      console.log(chalk.green('[Notary] done signing '), file);
 
       return {
         status: 'ok',
