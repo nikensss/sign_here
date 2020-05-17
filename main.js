@@ -10,6 +10,7 @@ const UserData = require('./classes/UserData');
 
 const appState = new AppState();
 const userData = new UserData();
+
 const getPlatformSpecificIcon = () => {
   if (process.platform === 'win32') return 'icon.ico';
   if (process.platform === 'darwin') return 'icon.icns';
@@ -21,7 +22,7 @@ ipcMain.on('get-messages', (event) => (event.returnValue = Message));
 function createWindow() {
   // Create the browser window.
   const win = new BrowserWindow({
-    width: 800,
+    width: 1800,
     height: 600,
     icon: path.join(__dirname, 'icon', getPlatformSpecificIcon()),
     webPreferences: {
@@ -120,7 +121,7 @@ function createWindow() {
   win.loadFile('./html/index.html');
 
   // Open the DevTools.
-  //win.webContents.openDevTools();
+  win.webContents.openDevTools();
 }
 
 // This method will be called when Electron has finished

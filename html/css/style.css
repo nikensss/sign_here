@@ -1,0 +1,69 @@
+:root {
+  --footer-height: 54px;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.bg-white {
+  background: white;
+}
+
+.p-footer {
+  padding-bottom: var(--footer-height);
+}
+
+.ofy-auto {
+  overflow-y: auto;
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+.h-50px {
+  height: 50px;
+}
+
+.h-70px {
+  height: 70px;
+}
+
+.flex-1 {
+  flex: 1;
+}
+
+.fixed-left {
+  position: fixed;
+  left: 0;
+}
+
+.settings {
+  height: var(--footer-height);
+  width: 54px;
+  z-index: 1040;
+}
+
+.settings img {
+  transition: all 0.45s ease-in-out;
+}
+
+.settings:hover {
+  cursor: pointer;
+}
+
+.settings:hover img {
+  transform: rotate(180deg);
+}
+
+.footer-button {
+  height: var(--footer-height);
+}
+
+button[disabled] {
+  pointer-events: none;
+}

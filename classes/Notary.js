@@ -8,6 +8,12 @@ class Notary {
     this.holmes = new Holmes();
   }
 
+  /**
+   * Sign the given file with the given signature.
+   *
+   * @param {File} file the file to be signed
+   * @param {File} signature the image of the signature
+   */
   async sign(file, signature) {
     console.log(chalk.green('[Notary] signing '), file);
     console.log(chalk.green('[Notary] signing with '), signature);
@@ -16,7 +22,7 @@ class Notary {
 
       const pdfBytes = await fs.readFile(file);
       const pdf = await PDFDocument.load(pdfBytes);
-      const signatureLocation = await this.holmes.find('Nom i cognoms', pdfBytes);
+      const signatureLocation = await this.holmes.find('Signatura del/de la tutor/a del grup', pdfBytes);
 
       if (!signatureLocation.found) {
         return {
@@ -38,7 +44,7 @@ class Notary {
 
       page.drawImage(pngImage, {
         x: signatureLocation.x + signatureLocation.width,
-        y: signatureLocation.y,
+        y: signatureLocation.y - pngDims.height / 2,
         width: pngDims.width,
         height: pngDims.height
       });
