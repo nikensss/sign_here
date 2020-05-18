@@ -33,10 +33,10 @@
     <!-- First row -->
     <div class="row no-gutters py-2 h-50px">
       <div class="col d-flex justify-content-center align-items-center">
-        <p class="m-0">¿Dónde está lo que se tiene que firmar?</p>
+        <p class="m-0">What needs to be signed?</p>
       </div>
       <div class="col d-flex justify-content-center align-items-center">
-        <p class="m-0">¿Dónde está la firma?</p>
+        <p class="m-0">Where is the signature?</p>
       </div>
     </div>
     <!-- Second row -->
@@ -48,7 +48,7 @@
       </div>
       <div class="col d-flex justify-content-center align-items-center">
         <button id="signature" type="button" class="btn btn-info my-2 rounded-pill w-75">
-          Firma
+          Signature
         </button>
       </div>
     </div>
@@ -64,14 +64,14 @@
       </div>
     </div>
     <!-- Settings -->
-    <div class="settings fixed-bottom fixed-left p-2">
+    <div class="settings fixed-bottom fixed-left p-2 show-user-settings">
       <img src="./open-iconic/svg/cog.svg" alt="cog" class="iconic iconic-md w-100">
     </div>
     <!-- Signing status -->
     <div class="fixed-bottom d-flex justify-content-center bg-white footer-button py-2">
       <!-- #sign-all button -->
       <button id="sign-all" type="button" class="btn btn-info rounded-pill w-25 position-absolute" disabled>
-        ¡Fírmalo todo!
+        Go for it!
       </button>
       <!-- signing progress bar -->
       <div class="rounded-pill w-25 position-absolute invisible progress-wrapper">
@@ -79,6 +79,16 @@
           <div class="progress-bar w-100" role="progressbar">
           </div>
         </div>
+      </div>
+    </div>
+    <!-- User settings -->
+    <div class="user-settings-wrapper d-flex justify-content-center align-items-center">
+      <div class="user-settings position-relative d-flex justify-content-center align-items-center rounded">
+        <button type="button" class="close-user-settings position-absolute bg-danger rounded" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <label for="target-text" class="mr-1 mb-0">Target text</label>
+        <input type="text" id="target-text" placeholder="target text">
       </div>
     </div>
 </body>

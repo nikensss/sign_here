@@ -104,8 +104,8 @@ function createWindow() {
       button: ['Ok'],
       defaultId: 0,
       title: 'Don Notario',
-      message: '¡Me voy a desayunar!',
-      detail: `Firmados correctamente: ${appState.successSigns}\nNo firmados: ${appState.failedSigns}`
+      message: 'Time for a break!',
+      detail: `Correctly signed: ${appState.successSigns}\nNot signed: ${appState.failedSigns}`
     });
   });
 

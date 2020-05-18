@@ -68,3 +68,25 @@ body {
 button[disabled] {
   pointer-events: none;
 }
+
+.user-settings-wrapper {
+  visibility: hidden;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: rgba(100, 100, 100, 0.9);
+  z-index: 1050;
+}
+
+.user-settings {
+  background: white;
+  width: 50%;
+  height: 50%;
+}
+
+.close-user-settings {
+  top: 5px;
+  right: 5px;
+}

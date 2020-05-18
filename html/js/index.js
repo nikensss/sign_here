@@ -7,6 +7,8 @@ $(document).ready(() => {
   const green = 'var(--green)';
   const red = 'var(--red)';
 
+  //HTML entities modifications
+
   //enables the use of tooltips
   $('[data-toggle="tooltip"]').tooltip();
 
@@ -41,6 +43,11 @@ $(document).ready(() => {
     $('.progress-wrapper').removeClass('invisible');
     $('.progress-bar').css('width', '0%');
   });
+
+  $('.show-user-settings').click(() => $('.user-settings-wrapper').css('visibility', 'visible'));
+  $('.close-user-settings').click(() => $('.user-settings-wrapper').css('visibility', 'hidden'));
+
+  //Windows methods
 
   window.showCollectedPdfs = function (pdfs) {
     $('#files-list').empty();
