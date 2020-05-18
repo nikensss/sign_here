@@ -103,7 +103,7 @@ $(document).ready(() => {
 
   window.disableSignAll = function () {
     $('#sign-all').attr('disabled', true);
-    $('.progress-wrapper').removeClass('invisible');
+    $('.progress-wrapper').addClass('invisible');
     leonardo.resetCanvas();
     leonardo.draw();
   };

@@ -48,7 +48,8 @@ body {
   z-index: 1040;
 }
 
-.settings img {
+.settings svg {
+  fill: var(--info);
   transition: all 0.45s ease-in-out;
 }
 
@@ -56,7 +57,7 @@ body {
   cursor: pointer;
 }
 
-.settings:hover img {
+.settings:hover svg {
   transform: rotate(180deg);
 }
 

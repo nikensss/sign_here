@@ -23,7 +23,7 @@ function createWindow() {
   // Create the browser window.
   const win = new BrowserWindow({
     width: 1800,
-    height: 600,
+    height: 900,
     icon: path.join(__dirname, 'icon', getPlatformSpecificIcon()),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
