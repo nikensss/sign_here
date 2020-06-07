@@ -43,4 +43,19 @@ body {
 
 button[disabled] {
   pointer-events: none;
+  color: #aaa;
+}
+
+input[type='text'] {
+  color: black;
+  border: 2px solid rgba(81, 142, 204, 0.4);
+  outline: 0;
+  border-radius: 7px;
+  padding: 7px 0;
+  background: transparent;
+  transition: border-color 0.2s;
+}
+
+input[type='text']:focus {
+  border-color: rgba(81, 142, 204, 0.8);
 }
