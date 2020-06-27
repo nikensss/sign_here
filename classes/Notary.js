@@ -68,8 +68,6 @@ class Notary {
       };
     }
   }
-
-  findSignatureLocation(file) {}
 }
 
 module.exports = Notary;
