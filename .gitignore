@@ -108,3 +108,5 @@ tests/
 
 #Distributable
 out
+
+.DS_Store

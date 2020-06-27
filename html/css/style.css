@@ -1,0 +1,93 @@
+:root {
+  --footer-height: 54px;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.bg-white {
+  background: white;
+}
+
+.p-footer {
+  padding-bottom: var(--footer-height);
+}
+
+.ofy-auto {
+  overflow-y: auto;
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+.h-50px {
+  height: 50px;
+}
+
+.h-70px {
+  height: 70px;
+}
+
+.flex-1 {
+  flex: 1;
+}
+
+.fixed-left {
+  position: fixed;
+  left: 0;
+}
+
+.settings {
+  display: none;
+  height: var(--footer-height);
+  width: 54px;
+  z-index: 1040;
+}
+
+.settings svg {
+  fill: var(--info);
+  transition: all 0.45s ease-in-out;
+}
+
+.settings:hover {
+  cursor: pointer;
+}
+
+.settings:hover svg {
+  transform: rotate(180deg);
+}
+
+.footer-button {
+  height: var(--footer-height);
+}
+
+button[disabled] {
+  pointer-events: none;
+}
+
+.user-settings-wrapper {
+  visibility: hidden;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: rgba(100, 100, 100, 0.9);
+  z-index: 1050;
+}
+
+.user-settings {
+  background: white;
+  width: 50%;
+  height: 50%;
+}
+
+.close-user-settings {
+  top: 5px;
+  right: 5px;
+}

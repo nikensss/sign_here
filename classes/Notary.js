@@ -41,7 +41,7 @@ class Notary {
 
       page.drawImage(pngImage, {
         x: signatureLocation.x + signatureLocation.width,
-        y: signatureLocation.y - pngDims.height,
+        y: signatureLocation.y - pngDims.height / 2,
         width: pngDims.width,
         height: pngDims.height
       });
