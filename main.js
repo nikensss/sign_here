@@ -16,12 +16,12 @@ const getPlatformSpecificIcon = () => {
   return 'icon.png';
 };
 
-ipcMain.on('get-messages', (event) => (event.returnValue = Message));
+ipcMain.on('get-messages', event => (event.returnValue = Message));
 
 function createWindow() {
   // Create the browser window.
   const win = new BrowserWindow({
-    width: 800,
+    width: 1800,
     height: 600,
     icon: path.join(__dirname, 'icon', getPlatformSpecificIcon()),
     webPreferences: {
@@ -49,7 +49,7 @@ function createWindow() {
     appState.files = result.filePaths;
     event.reply(
       Message.COLLECTED_PDFS,
-      appState.files.map((f) => path.basename(f))
+      appState.files.map(f => path.basename(f))
     );
 
     if (appState.canSign()) event.reply(Message.CAN_SIGN);
@@ -77,21 +77,38 @@ function createWindow() {
     if (appState.canSign()) event.reply(Message.CAN_SIGN);
   });
 
-  ipcMain.on(Message.SIGN_ALL, async (event, files) => {
+  ipcMain.on(Message.SIGN_ALL, async (event, files, targetText) => {
     //remove those files that were discarded in the frontend
-    appState.files = appState.files.filter((sf) => files.includes(path.basename(sf)));
+    appState.files = appState.files.filter(sf =>
+      files.includes(path.basename(sf))
+    );
+    appState.targetText = targetText;
+    userData.set('targetText', appState.targetText);
+    console.log(chalk.blue('[main.js] target text:'), appState.targetText);
     console.log(chalk.blue('[main.js] signing files'), appState.files);
     const notary = new Notary();
 
     for (let file of appState.files) {
       try {
-        let result = await notary.sign(file, appState.signature);
+        let result = await notary.sign(
+          file,
+          appState.signature,
+          appState.targetText
+        );
         if (result.ok) {
           event.reply(Message.FILE_SIGNED, path.basename(result.originalFile));
           appState.addSuccess();
         } else {
-          console.log(chalk.red(`[main.js] couldn't sign ${result.originalFile}; reason: ${result.error}`));
-          event.reply(Message.FILE_NOT_SIGNED, path.basename(result.originalFile), result.error);
+          console.log(
+            chalk.red(
+              `[main.js] couldn't sign ${result.originalFile}; reason: ${result.error}`
+            )
+          );
+          event.reply(
+            Message.FILE_NOT_SIGNED,
+            path.basename(result.originalFile),
+            result.error
+          );
           appState.addFail();
         }
       } catch (ex) {
@@ -108,11 +125,16 @@ function createWindow() {
     });
   });
 
-  ipcMain.on(Message.LOAD_USER_DATA, (event) => {
-    console.log(chalk.blue('[main.js] loading user signature'));
+  ipcMain.on(Message.LOAD_USER_DATA, event => {
+    console.log(chalk.blue('[main.js] loading user data'));
     if (fs.existsSync(userData.get('signature'))) {
       appState.signature = userData.get('signature');
       event.reply(Message.COLLECTED_SIGNATURE, appState.signature);
+    }
+    const targetText = userData.get('targetText');
+    if (typeof targetText !== 'undefined') {
+      appState.targetText = targetText;
+      event.reply(Message.COLLECTED_TARGET_TEXT, appState.targetText);
     }
   });
 
@@ -120,7 +142,7 @@ function createWindow() {
   win.loadFile('./html/index.html');
 
   // Open the DevTools.
-  //win.webContents.openDevTools();
+  win.webContents.openDevTools();
 }
 
 // This method will be called when Electron has finished

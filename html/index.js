@@ -13,6 +13,11 @@ $(document).ready(() => {
   //make the progress bar container as tall as the #sign-all button
   $('.progress-wrapper').css('height', $('#sign-all').css('height'));
 
+  //listen to changes on input target text
+  $('#target-text').on('input', function () {
+    const length = $(this).val().length;
+  });
+
   $('#pdf').click(() => {
     console.log('[window] requesting pdfs files');
     window.postMessage({
@@ -28,14 +33,21 @@ $(document).ready(() => {
   });
 
   $('#sign-all').click(() => {
+    if ($('#target-text').val().length === 0) {
+      return alert('Deberías decirme dónde va la firma.');
+    }
+
     state.totalFiles = $('.show.file').length;
-    console.log(`[window] requesting signature stamping for ${state.totalFiles} files`);
+    console.log(
+      `[window] requesting signature stamping for ${state.totalFiles} files`
+    );
     const files = $('.file.show')
       .map((i, e) => $(e).attr('data-basename'))
       .get();
     window.postMessage({
       type: Message.SIGN_ALL,
-      files: files
+      files: files,
+      targetText: $('#target-text').val()
     });
     $('#sign-all').attr('disabled', true);
     $('.progress-wrapper').removeClass('invisible');
@@ -48,8 +60,8 @@ $(document).ready(() => {
 
     pdfs.forEach((pdf, i) => {
       const collapsibleRow = $('<div/>', {
-        class: 'collapse show file',
-        id: 'file-' + i,
+        'class': 'collapse show file',
+        'id': 'file-' + i,
         'data-basename': pdf
       });
       const fileRow = $('<div/>', {
@@ -63,9 +75,9 @@ $(document).ready(() => {
         class: 'col-2 d-flex justify-content-center align-items-center px-2'
       });
       const deleteButton = $('<button/>', {
-        class: 'btn btn-danger mb-0',
-        type: 'button',
-        html: '&times;',
+        'class': 'btn btn-danger mb-0',
+        'type': 'button',
+        'html': '&times;',
         'data-toggle': 'collapse',
         'data-target': '#file-' + i //'#' + f
       });
@@ -132,13 +144,20 @@ $(document).ready(() => {
   };
 
   window.updateProgressBar = function (color) {
-    const percentageComplete = (($('.alert-success').length + $('.alert-danger').length) / state.totalFiles) * 100;
+    const percentageComplete =
+      (($('.alert-success').length + $('.alert-danger').length) /
+        state.totalFiles) *
+      100;
     const step = (1 / state.totalFiles) * 100;
-    leonardo.addProgressStripe(color, percentageComplete - step + '%', percentageComplete + '%');
+    leonardo.addProgressStripe(
+      color,
+      percentageComplete - step + '%',
+      percentageComplete + '%'
+    );
     leonardo.draw();
   };
 
-  window.addEventListener('message', (event) => {
+  window.addEventListener('message', event => {
     console.log('[window] received message of type', event.data.type);
     switch (event.data.type) {
       case Message.COLLECTED_PDFS:
@@ -146,6 +165,9 @@ $(document).ready(() => {
         break;
       case Message.COLLECTED_SIGNATURE:
         window.showCollectedSignature(event.data.signature);
+        break;
+      case Message.COLLECTED_TARGET_TEXT:
+        $('#target-text').val(event.data.targetText);
         break;
       case Message.CAN_SIGN:
         window.enableSignAll();

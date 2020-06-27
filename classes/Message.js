@@ -8,7 +8,8 @@ const Message = {
   FILE_SIGNED: 'file-signed',
   FILE_NOT_SIGNED: 'file-not-signed',
   LOAD_USER_DATA: 'load-user-data',
-  EVERYTHING_SIGNED: 'everything-signed'
+  EVERYTHING_SIGNED: 'everything-signed',
+  COLLECTED_TARGET_TEXT: 'collected-target-text'
 };
 
 module.exports = Message;

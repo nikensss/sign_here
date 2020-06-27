@@ -6,7 +6,10 @@ contextBridge.exposeInMainWorld('Message', Message);
 
 process.once('loaded', () => {
   ipcRenderer.on(Message.COLLECTED_PDFS, (event, pdfs) => {
-    console.log('[preload - ipcRenderer] message received: collected-pdfs', pdfs);
+    console.log(
+      '[preload - ipcRenderer] message received: collected-pdfs',
+      pdfs
+    );
     window.postMessage({
       type: Message.COLLECTED_PDFS,
       pdfs: pdfs
@@ -14,14 +17,28 @@ process.once('loaded', () => {
   });
 
   ipcRenderer.on(Message.COLLECTED_SIGNATURE, (event, signature) => {
-    console.log('[preload - ipcRenderer] message received: collected-signature', signature);
+    console.log(
+      '[preload - ipcRenderer] message received: collected-signature',
+      signature
+    );
     window.postMessage({
       type: Message.COLLECTED_SIGNATURE,
       signature: signature
     });
   });
 
-  ipcRenderer.on(Message.CAN_SIGN, (event) => {
+  ipcRenderer.on(Message.COLLECTED_TARGET_TEXT, (event, targetText) => {
+    console.log(
+      '[preload - ipcRenderer] message received: collected-target-text',
+      targetText
+    );
+    window.postMessage({
+      type: Message.COLLECTED_TARGET_TEXT,
+      targetText: targetText
+    });
+  });
+
+  ipcRenderer.on(Message.CAN_SIGN, event => {
     console.log('[preload - ipcRenderer] can sign!');
     window.postMessage({
       type: Message.CAN_SIGN
@@ -37,7 +54,11 @@ process.once('loaded', () => {
   });
 
   ipcRenderer.on(Message.FILE_NOT_SIGNED, (event, file, reason) => {
-    console.log('[preload - ipcRenderer] received file NOT signed and reason', file, reason);
+    console.log(
+      '[preload - ipcRenderer] received file NOT signed and reason',
+      file,
+      reason
+    );
     window.postMessage({
       type: Message.FILE_NOT_SIGNED,
       file: file,
@@ -45,7 +66,7 @@ process.once('loaded', () => {
     });
   });
 
-  window.addEventListener('message', (event) => {
+  window.addEventListener('message', event => {
     if (!(event.origin === 'file://' && event.source === window)) {
       console.log('[preload] ignoring message of type', event.data.type);
     }
@@ -59,7 +80,11 @@ process.once('loaded', () => {
         ipcRenderer.send(Message.SELECT_SIGNATURE);
         break;
       case Message.SIGN_ALL:
-        ipcRenderer.send(Message.SIGN_ALL, event.data.files);
+        ipcRenderer.send(
+          Message.SIGN_ALL,
+          event.data.files,
+          event.data.targetText
+        );
         break;
       case Message.LOAD_USER_DATA:
         ipcRenderer.send(Message.LOAD_USER_DATA);

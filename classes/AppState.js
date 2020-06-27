@@ -6,6 +6,7 @@ class AppState {
     this._isSelectedSignature = false;
     this._successSigns = 0;
     this._failedSigns = 0;
+    this._targetText = '';
   }
 
   get successSigns() {
@@ -41,7 +42,7 @@ class AppState {
       this._isSelectedFiles = false;
       throw new Error('No files received');
     }
-    if (files.some((f) => f === '')) {
+    if (files.some(f => f === '')) {
       this._isSelectedFiles = false;
       throw new Error('Some files are invalid');
     }
@@ -61,6 +62,18 @@ class AppState {
     }
     this._isSelectedSignature = true;
     this._signature = signature;
+  }
+
+  get targetText() {
+    return this._targetText;
+  }
+
+  set targetText(targetText) {
+    if (typeof targetText === 'undefined' || targetText === '') {
+      throw new Error(`[AppState] Invalid target text: ${targetText}`);
+    }
+
+    this._targetText = targetText;
   }
 
   canSign() {
