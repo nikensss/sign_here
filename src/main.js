@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const { app, BrowserWindow, dialog, ipcMain } = require('electron');
 const chalk = require('chalk');
+const { Worker } = require('worker_threads');
 
 const Notary = require('./classes/Notary');
 const Message = require('./classes/Message');
@@ -80,49 +81,50 @@ function createWindow() {
 
   ipcMain.on(Message.SIGN_ALL, async (event, files, targetText) => {
     //remove those files that were discarded in the frontend
-    appState.files = appState.files.filter(sf =>
-      files.includes(path.basename(sf))
+    appState.files = appState.files.filter(f =>
+      files.includes(path.basename(f))
     );
+
     appState.targetText = targetText;
     userData.set('targetText', appState.targetText);
     console.log(chalk.blue('[main.js] target text:'), appState.targetText);
     console.log(chalk.blue('[main.js] signing files'), appState.files);
-    const notary = new Notary();
 
-    for (let file of appState.files) {
-      try {
-        let result = await notary.sign(
-          file,
-          appState.signature,
-          appState.targetText
+    const worker = Notary.signAll(appState);
+
+    worker.on('message', m => {
+      console.log(`message from worker:`, m);
+      if (m.ok) {
+        event.reply(Message.FILE_SIGNED, path.basename(m.originalFile));
+        appState.addSuccess();
+      } else {
+        console.log(
+          chalk.red(
+            `[main.js] couldn't sign ${m.originalFile}; reason: ${m.error}`
+          )
         );
-        if (result.ok) {
-          event.reply(Message.FILE_SIGNED, path.basename(result.originalFile));
-          appState.addSuccess();
-        } else {
-          console.log(
-            chalk.red(
-              `[main.js] couldn't sign ${result.originalFile}; reason: ${result.error}`
-            )
-          );
-          event.reply(
-            Message.FILE_NOT_SIGNED,
-            path.basename(result.originalFile),
-            result.error
-          );
-          appState.addFail();
-        }
-      } catch (ex) {
-        console.error(ex);
+        event.reply(
+          Message.FILE_NOT_SIGNED,
+          path.basename(m.originalFile),
+          m.error
+        );
+        appState.addFail();
       }
-    }
-    await dialog.showMessageBox({
-      type: 'info',
-      button: ['Ok'],
-      defaultId: 0,
-      title: 'Don Notario',
-      message: 'Time for a break!',
-      detail: `Correctly signed: ${appState.successSigns}\nNot signed: ${appState.failedSigns}`
+    });
+
+    worker.on('exit', async exitCode => {
+      await dialog.showMessageBox({
+        type: 'info',
+        button: ['Ok'],
+        defaultId: 0,
+        title: 'Don Notario',
+        message: 'Time for a break!',
+        detail: `Correctly signed: ${appState.successSigns}\nNot signed: ${appState.failedSigns}`
+      });
+    });
+
+    worker.on('error', err => {
+      console.log(`error from worker:`, err);
     });
   });
 

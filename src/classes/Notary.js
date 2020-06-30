@@ -1,7 +1,9 @@
 const fs = require('fs').promises;
+const path = require('path');
 const PDFDocument = require('pdf-lib').PDFDocument;
 const Holmes = require('./Holmes');
 const chalk = require('chalk');
+const { Worker } = require('worker_threads');
 
 class Notary {
   constructor() {
@@ -67,6 +69,23 @@ class Notary {
         outputFile: ''
       };
     }
+  }
+
+  /**
+   * Signs a collection of files in a new thread, to keep the main thread free
+   * of load.
+   *
+   * @param {*} appState An object with the files to sign (an array of paths),
+   * the signature (the path to the image) and the target text.
+   */
+  static signAll({ files, signature, targetText }) {
+    return new Worker(path.join(__dirname, 'SignService.js'), {
+      workerData: {
+        files,
+        signature,
+        targetText
+      }
+    });
   }
 }
 
