@@ -1,6 +1,6 @@
 {
   "name": "sign_here",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Signs the selected PDF's with the provided image. This image should represent a hand signature.",
   "main": "src/main.js",
   "scripts": {
