@@ -2,9 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const { app, BrowserWindow, dialog, ipcMain } = require('electron');
 const chalk = require('chalk');
-const { Worker } = require('worker_threads');
 
-const Notary = require('./classes/Notary');
 const Message = require('./classes/Message');
 const AppState = require('./classes/AppState');
 const UserData = require('./classes/UserData');
@@ -18,14 +16,14 @@ const getPlatformSpecificIcon = () => {
   return 'icon.png';
 };
 
-ipcMain.on('get-messages', event => (event.returnValue = Message));
+ipcMain.on('get-messages', (event) => (event.returnValue = Message));
 
 function createWindow() {
   // Create the browser window.
   const win = new BrowserWindow({
     width: 800,
     height: 600,
-    icon: path.join(__dirname, 'icon', getPlatformSpecificIcon()),
+    icon: path.join(__dirname, '..', 'icon', getPlatformSpecificIcon()),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: false,
@@ -34,112 +32,19 @@ function createWindow() {
       sandbox: true
     }
   });
+  appState.win = win;
 
-  ipcMain.on(Message.SELECT_FILES, async (event, arg) => {
-    const result = await dialog.showOpenDialog(win, {
-      title: "Selecciona los PDF's",
-      properties: ['openFile', 'multiSelections'],
-      filters: [
-        { name: 'PDF', extensions: ['pdf'] },
-        { name: 'All Files', extensions: ['*'] }
-      ]
-    });
-    console.log(chalk.blue('[main.js] files selected'), result.filePaths);
+  ipcMain.on(Message.SELECT_FILES, (event) => appState.selectFiles(event));
 
-    if (result.filePaths.length === 0) return;
+  ipcMain.on(Message.SELECT_SIGNATURE, (event) =>
+    appState.selectSignature(event)
+  );
 
-    appState.files = result.filePaths;
-    event.reply(
-      Message.COLLECTED_PDFS,
-      appState.files.map(f => path.basename(f))
-    );
+  ipcMain.on(Message.SIGN_ALL, (event, files, targetText) =>
+    appState.signAll(event, files, targetText)
+  );
 
-    if (appState.canSign()) event.reply(Message.CAN_SIGN);
-  });
-
-  ipcMain.on(Message.SELECT_SIGNATURE, async (event, arg) => {
-    const result = await dialog.showOpenDialog(win, {
-      title: 'Selecciona la imagen de la firma',
-      properties: ['openFile'],
-      filters: [
-        { name: 'PNG', extensions: ['png'] },
-        { name: 'JPG', extensions: ['jpg'] },
-        { name: 'Images', extensions: ['jpg', 'png'] }
-      ]
-    });
-    if (result.filePaths.length === 0 || result.filePaths[0].length === 0) {
-      return;
-    }
-
-    console.log(chalk.blue('[main.js] signature selected'), result.filePaths);
-
-    appState.signature = result.filePaths[0];
-    userData.set('signature', result.filePaths[0]);
-    event.reply(Message.COLLECTED_SIGNATURE, appState.signature);
-    if (appState.canSign()) event.reply(Message.CAN_SIGN);
-  });
-
-  ipcMain.on(Message.SIGN_ALL, async (event, files, targetText) => {
-    //remove those files that were discarded in the frontend
-    appState.files = appState.files.filter(f =>
-      files.includes(path.basename(f))
-    );
-
-    appState.targetText = targetText;
-    userData.set('targetText', appState.targetText);
-    console.log(chalk.blue('[main.js] target text:'), appState.targetText);
-    console.log(chalk.blue('[main.js] signing files'), appState.files);
-
-    const worker = Notary.signAll(appState);
-
-    worker.on('message', m => {
-      console.log(`message from worker:`, m);
-      if (m.ok) {
-        event.reply(Message.FILE_SIGNED, path.basename(m.originalFile));
-        appState.addSuccess();
-      } else {
-        console.log(
-          chalk.red(
-            `[main.js] couldn't sign ${m.originalFile}; reason: ${m.error}`
-          )
-        );
-        event.reply(
-          Message.FILE_NOT_SIGNED,
-          path.basename(m.originalFile),
-          m.error
-        );
-        appState.addFail();
-      }
-    });
-
-    worker.on('exit', async exitCode => {
-      await dialog.showMessageBox({
-        type: 'info',
-        button: ['Ok'],
-        defaultId: 0,
-        title: 'Don Notario',
-        message: 'Time for a break!',
-        detail: `Correctly signed: ${appState.successSigns}\nNot signed: ${appState.failedSigns}`
-      });
-    });
-
-    worker.on('error', err => {
-      console.log(`error from worker:`, err);
-    });
-  });
-
-  ipcMain.on(Message.LOAD_USER_DATA, event => {
-    console.log(chalk.blue('[main.js] loading user data'));
-    if (fs.existsSync(userData.get('signature'))) {
-      appState.signature = userData.get('signature');
-      event.reply(Message.COLLECTED_SIGNATURE, appState.signature);
-    }
-    const targetText = userData.get('targetText');
-    if (typeof targetText !== 'undefined') {
-      appState.targetText = targetText;
-      event.reply(Message.COLLECTED_TARGET_TEXT, appState.targetText);
-    }
-  });
+  ipcMain.on(Message.LOAD_USER_DATA, (event) => appState.loadUserData(event));
 
   // and load the index.html of the app.
   win.loadFile(path.join(__dirname, 'html', 'index.html'));
