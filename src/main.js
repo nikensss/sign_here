@@ -19,9 +19,9 @@ function createWindow() {
   appState.win = new BrowserWindow({
     width: 800,
     height: 600,
-    icon: path.resolve('icon', getPlatformSpecificIcon()),
+    // icon: path.resolve('icon', getPlatformSpecificIcon()),
     webPreferences: {
-      preload: path.resolve('src', 'preload.js'),
+      preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: false,
       enableRemoteModule: false,
       contextIsolation: true,
