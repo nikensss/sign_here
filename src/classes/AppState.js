@@ -19,8 +19,12 @@ class AppState {
     this._userData = new UserData();
   }
 
+  /**
+   * @param {Electron.BrowserWindow} win
+   */
   set win(win) {
     this._win = win;
+    this._win.loadFile(path.join(__dirname, '..', 'html', 'index.html'));
   }
 
   get successSigns() {
@@ -98,6 +102,7 @@ class AppState {
     }
     this._isSelectedSignature = true;
     this._signature = signature;
+    this._userData.set('signature', signature);
   }
 
   async selectSignature(event) {
@@ -117,7 +122,6 @@ class AppState {
     console.log(chalk.blue('[AppState] signature selected'), result.filePaths);
 
     this.signature = result.filePaths[0];
-    this._userData.set('signature', result.filePaths[0]);
     event.reply(Message.COLLECTED_SIGNATURE, this.signature);
     if (this.canSign()) event.reply(Message.CAN_SIGN);
   }
@@ -132,6 +136,7 @@ class AppState {
     }
 
     this._targetText = targetText;
+    this._userData.set('targetText', targetText);
   }
 
   canSign() {
@@ -143,7 +148,6 @@ class AppState {
     this.files = this.files.filter((f) => files.includes(path.basename(f)));
 
     this.targetText = targetText;
-    this._userData.set('targetText', this.targetText);
     console.log(chalk.blue('[AppState] target text:'), this.targetText);
     console.log(chalk.blue('[AppState] signing files'), this.files);
 

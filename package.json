@@ -24,7 +24,7 @@
     "@electron-forge/maker-rpm": "^6.0.0-beta.51",
     "@electron-forge/maker-squirrel": "^6.0.0-beta.51",
     "@electron-forge/maker-zip": "^6.0.0-beta.51",
-    "electron": "^8.5.5"
+    "electron": "^11.2.1"
   },
   "dependencies": {
     "bootstrap": "^4.5.0",
@@ -32,6 +32,7 @@
     "dotenv": "^8.2.0",
     "electron-squirrel-startup": "^1.0.0",
     "jquery": "^3.5.1",
+    "node-abi": "^2.19.3",
     "pdf-lib": "^1.6.0",
     "pdf-parse": "^1.1.1",
     "popper.js": "^1.16.0"
