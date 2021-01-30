@@ -6,12 +6,6 @@ const AppState = require('./classes/AppState');
 
 const appState = new AppState();
 
-const getPlatformSpecificIcon = () => {
-  // if (process.platform === 'win32') return 'icon.ico';
-  // if (process.platform === 'darwin') return 'icon.icns';
-  return 'icon.png';
-};
-
 ipcMain.on('get-messages', (event) => (event.returnValue = Message));
 
 function createWindow() {
@@ -19,7 +13,7 @@ function createWindow() {
   appState.win = new BrowserWindow({
     width: 800,
     height: 600,
-    // icon: path.resolve('icon', getPlatformSpecificIcon()),
+    icon: path.join(__dirname, '..', 'icon', 'icon.png'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: false,
