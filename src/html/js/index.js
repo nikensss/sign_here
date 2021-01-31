@@ -1,4 +1,4 @@
-$(document).ready(() => {
+$(function () {
   const state = {
     totalFiles: 0
   };
@@ -20,21 +20,21 @@ $(document).ready(() => {
     const length = $(this).val().length;
   });
 
-  $('#pdf').click(() => {
+  $('#pdf').on('click', () => {
     console.log('[window] requesting pdfs files');
     window.postMessage({
       type: Message.SELECT_FILES
     });
   });
 
-  $('#signature').click(() => {
+  $('#signature').on('click', () => {
     console.log('[window] requesting signature image');
     window.postMessage({
       type: Message.SELECT_SIGNATURE
     });
   });
 
-  $('#sign-all').click(() => {
+  $('#sign-all').on('click', () => {
     if ($('#target-text').val().length === 0) {
       return alert('Deberías decirme dónde va la firma.');
     }
@@ -56,8 +56,12 @@ $(document).ready(() => {
     $('.progress-bar').css('width', '0%');
   });
 
-  $('.show-user-settings').click(() => $('.user-settings-wrapper').css('visibility', 'visible'));
-  $('.close-user-settings').click(() => $('.user-settings-wrapper').css('visibility', 'hidden'));
+  $('.show-user-settings').on('click', () =>
+    $('.user-settings-wrapper').css('visibility', 'visible')
+  );
+  $('.close-user-settings').on('click', () =>
+    $('.user-settings-wrapper').css('visibility', 'hidden')
+  );
 
   //Windows methods
 
@@ -164,7 +168,7 @@ $(document).ready(() => {
     leonardo.draw();
   };
 
-  window.addEventListener('message', event => {
+  window.addEventListener('message', (event) => {
     console.log('[window] received message of type', event.data.type);
     switch (event.data.type) {
       case Message.COLLECTED_PDFS:
