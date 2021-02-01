@@ -13,11 +13,15 @@ class UserData {
 
   load() {
     if (!fs.existsSync(this.filePath)) {
-      const fd = fs.openSync(this.filePath, 'w');
-      fs.writeFileSync(fd, '{}');
-      fs.closeSync(fd);
+      this.initializeConfigFile();
     }
     return JSON.parse(fs.readFileSync(this.filePath));
+  }
+
+  initializeConfigFile() {
+    const fd = fs.openSync(this.filePath, 'w');
+    fs.writeFileSync(fd, '{}');
+    fs.closeSync(fd);
   }
 
   save() {

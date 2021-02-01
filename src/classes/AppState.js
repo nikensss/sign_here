@@ -7,67 +7,87 @@ const UserData = require('./UserData');
 const Notary = require('./Notary');
 
 class AppState {
+  #win;
+  #files;
+  #userData;
+  #successSigns;
+  #failedSigns;
+
   constructor() {
-    this._files = [];
-    this._isSelectedFiles = false;
-    this._signature = '';
-    this._isSelectedSignature = false;
-    this._successSigns = 0;
-    this._failedSigns = 0;
-    this._targetText = '';
-    this._win = null;
-    this._userData = new UserData();
+    this.#files = [];
+    this.#successSigns = 0;
+    this.#failedSigns = 0;
+    this.#win = null;
+    this.#userData = new UserData();
   }
 
   /**
+   * Main window.
+   *
    * @param {Electron.BrowserWindow} win
    */
   set win(win) {
-    this._win = win;
-    this._win.loadFile(path.join(__dirname, '..', 'html', 'index.html'));
+    this.#win = win;
+    this.#win.loadFile(path.join(__dirname, '..', 'html', 'index.html'));
+  }
+
+  resetCount() {
+    this.#successSigns = 0;
+    this.#failedSigns = 0;
   }
 
   get successSigns() {
-    return this._successSigns;
+    return this.#successSigns;
   }
 
   addSuccess() {
-    this._successSigns += 1;
+    this.#successSigns += 1;
   }
 
   get failedSigns() {
-    return this._failedSigns;
+    return this.#failedSigns;
   }
 
   addFail() {
-    this._failedSigns += 1;
-  }
-
-  get isSelectedFiles() {
-    return this._isSelectedFiles;
-  }
-
-  set isSelectedFiles(value) {
-    this._isSelectedFiles = value;
+    this.#failedSigns += 1;
   }
 
   get files() {
-    return [...this._files];
+    return [...this.#files];
   }
 
   set files(files) {
     if (files.length === 0) {
-      this._isSelectedFiles = false;
+      this.#files = [];
       throw new Error('No files received');
     }
+
     if (files.some((f) => f === '')) {
-      this._isSelectedFiles = false;
+      this.#files = [];
       throw new Error('Some files are invalid');
     }
-    this._isSelectedFiles = true;
-    this._files = [...files];
-    this._successSigns = 0;
-    this._failedSigns = 0;
+
+    this.#files = [...files];
+    this.resetCount();
+  }
+
+  get isSelectedFiles() {
+    return this.#files.length > 0;
+  }
+
+  get signature() {
+    return this.#userData.get('signature');
+  }
+
+  set signature(signature) {
+    if (signature === '') {
+      throw new Error('Invalid signature');
+    }
+    this.#userData.set('signature', signature);
+  }
+
+  get isSelectedSignature() {
+    return this.signature;
   }
 
   async selectFiles(event, arg) {
@@ -92,19 +112,6 @@ class AppState {
     if (this.canSign()) event.reply(Message.CAN_SIGN);
   }
 
-  get signature() {
-    return this._signature;
-  }
-
-  set signature(signature) {
-    if (signature === '') {
-      throw new Error('Invalid signature');
-    }
-    this._isSelectedSignature = true;
-    this._signature = signature;
-    this._userData.set('signature', signature);
-  }
-
   async selectSignature(event) {
     const result = await dialog.showOpenDialog(this._win, {
       title: 'Selecciona la imagen de la firma',
@@ -115,6 +122,7 @@ class AppState {
         { name: 'Images', extensions: ['jpg', 'png'] }
       ]
     });
+
     if (result.filePaths.length === 0 || result.filePaths[0].length === 0) {
       return;
     }
@@ -127,20 +135,18 @@ class AppState {
   }
 
   get targetText() {
-    return this._targetText;
+    return this.#userData.get('targetText');
   }
 
   set targetText(targetText) {
     if (typeof targetText === 'undefined' || targetText === '') {
       throw new Error(`[AppState] Invalid target text: ${targetText}`);
     }
-
-    this._targetText = targetText;
-    this._userData.set('targetText', targetText);
+    this.#userData.set('targetText', targetText);
   }
 
   canSign() {
-    return this._isSelectedFiles && this._isSelectedSignature;
+    return this.isSelectedFiles && this.isSelectedSignature;
   }
 
   async signAll(event, files, targetText) {
@@ -191,13 +197,11 @@ class AppState {
 
   loadUserData(event) {
     console.log(chalk.blue('[AppState] loading user data'));
-    if (fs.existsSync(this._userData.get('signature'))) {
-      this.signature = this._userData.get('signature');
+    if (fs.existsSync(this.signature)) {
       event.reply(Message.COLLECTED_SIGNATURE, this.signature);
     }
 
-    if (typeof this._userData.get('targetText') !== 'undefined') {
-      this.targetText = this._userData.get('targetText');
+    if (typeof this.targetText !== 'undefined') {
       event.reply(Message.COLLECTED_TARGET_TEXT, this.targetText);
     }
   }
