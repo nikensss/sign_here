@@ -49,7 +49,7 @@ class Notary {
       });
 
       const pdfBytesSaved = await pdf.save();
-      await fs.writeFile(file.replace('.pdf', '_firmat.pdf'), pdfBytesSaved);
+      await fs.writeFile(file.replace('.pdf', '_signed.pdf'), pdfBytesSaved);
       console.log(chalk.green('[Notary] done signing '), file);
 
       return {
@@ -57,7 +57,7 @@ class Notary {
         ok: true,
         error: '',
         originalFile: file,
-        outputFile: file.replace('.pdf', '_firmat.pdf')
+        outputFile: file.replace('.pdf', '_signed.pdf')
       };
     } catch (ex) {
       console.error('Exception recorded', ex);

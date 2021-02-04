@@ -36,7 +36,7 @@ $(function () {
 
   $('#sign-all').on('click', () => {
     if ($('#target-text').val().length === 0) {
-      return alert('Deberías decirme dónde va la firma.');
+      return alert('Could you please tell me where to sign?');
     }
 
     state.totalFiles = $('.show.file').length;

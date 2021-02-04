@@ -28,7 +28,14 @@ class AppState {
    */
   set win(win) {
     this.#win = win;
-    this.#win.loadFile(path.join(__dirname, '..', 'html', 'index.html'));
+  }
+
+  show(file) {
+    this.#win.loadFile(file);
+  }
+
+  openDevTools() {
+    this.#win.webContents.openDevTools();
   }
 
   resetCount() {
@@ -90,7 +97,7 @@ class AppState {
     return this.signature;
   }
 
-  async selectFiles(event, arg) {
+  async selectFiles(event) {
     const result = await dialog.showOpenDialog(this._win, {
       title: "Selecciona los PDF's",
       properties: ['openFile', 'multiSelections'],

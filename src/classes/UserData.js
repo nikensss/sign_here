@@ -3,6 +3,9 @@ const path = require('path');
 const { app } = require('electron');
 const chalk = require('chalk');
 
+/**
+ * User preferences persistence.
+ */
 class UserData {
   constructor() {
     this.fileName = 'config.json';
