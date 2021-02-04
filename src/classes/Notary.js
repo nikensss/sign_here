@@ -1,9 +1,10 @@
+/* eslint-disable no-console */
 const fs = require('fs').promises;
 const path = require('path');
-const PDFDocument = require('pdf-lib').PDFDocument;
-const Holmes = require('./Holmes');
+const { PDFDocument } = require('pdf-lib');
 const chalk = require('chalk');
 const { Worker } = require('worker_threads');
+const Holmes = require('./Holmes');
 
 class Notary {
   constructor() {

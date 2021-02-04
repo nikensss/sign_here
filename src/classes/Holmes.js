@@ -1,4 +1,4 @@
-const pdf = require('pdf-parse'); //check documents https://mozilla.github.io/pdf.js/
+const pdf = require('pdf-parse'); // check documents https://mozilla.github.io/pdf.js/
 
 /**
  * The Holmes class has the capabilities of looking
@@ -6,38 +6,37 @@ const pdf = require('pdf-parse'); //check documents https://mozilla.github.io/pd
  * It wraps the pdf-parse node package.
  */
 class Holmes {
-  constructor() {}
-
   /**
    * Returns the {x,y} position and the width of the target text.
    *
    * @param {String} text The text to find
    * @param {DataBuffer} dataBuffer The data buffer that represents the target file (use `fs.read()`)
    */
+  // eslint-disable-next-line class-methods-use-this
   async find(text, dataBuffer) {
     const result = {
       found: false,
       x: null,
       y: null,
       width: null,
-      page: null //0-based index
+      page: null // 0-based index
     };
     let pageCount = -1;
 
     await pdf(dataBuffer, {
-      pagerender: async function (pageData) {
-        let render_options = {
+      async pagerender(pageData) {
+        const renderOptions = {
           normalizeWhitespace: false,
           disableCombineTextItems: false
         };
 
-        await pageData.getTextContent(render_options).then(function (textContent) {
+        await pageData.getTextContent(renderOptions).then((textContent) => {
           pageCount += 1;
-          for (let item of textContent.items) {
+          // eslint-disable-next-line no-restricted-syntax
+          for (const item of textContent.items) {
             if (item.str.includes(text)) {
               result.found = true;
-              result.x = item.transform[4];
-              result.y = item.transform[5];
+              [, , , , result.x, result.y] = item.transform;
               result.width = item.width;
               result.page = pageCount;
             }

@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const fs = require('fs');
 const path = require('path');
 const { dialog } = require('electron');
@@ -8,9 +9,13 @@ const Notary = require('./Notary');
 
 class AppState {
   #win;
+
   #files;
+
   #userData;
+
   #successSigns;
+
   #failedSigns;
 
   constructor() {
@@ -98,7 +103,7 @@ class AppState {
   }
 
   async selectFiles(event) {
-    const result = await dialog.showOpenDialog(this._win, {
+    const result = await dialog.showOpenDialog(this.#win, {
       title: "Selecciona los PDF's",
       properties: ['openFile', 'multiSelections'],
       filters: [
@@ -120,7 +125,7 @@ class AppState {
   }
 
   async selectSignature(event) {
-    const result = await dialog.showOpenDialog(this._win, {
+    const result = await dialog.showOpenDialog(this.#win, {
       title: 'Selecciona la imagen de la firma',
       properties: ['openFile'],
       filters: [
@@ -136,7 +141,7 @@ class AppState {
 
     console.log(chalk.blue('[AppState] signature selected'), result.filePaths);
 
-    this.signature = result.filePaths[0];
+    [this.signature] = result.filePaths;
     event.reply(Message.COLLECTED_SIGNATURE, this.signature);
     if (this.canSign()) event.reply(Message.CAN_SIGN);
   }
@@ -157,7 +162,7 @@ class AppState {
   }
 
   async signAll(event, files, targetText) {
-    //remove those files that were discarded in the frontend
+    // remove those files that were discarded in the frontend
     this.files = this.files.filter((f) => files.includes(path.basename(f)));
 
     this.targetText = targetText;
@@ -167,7 +172,7 @@ class AppState {
     const worker = Notary.signAll(this);
 
     worker.on('message', (m) => {
-      console.log(`message from worker:`, m);
+      console.log('message from worker:', m);
       if (m.ok) {
         event.reply(Message.FILE_SIGNED, path.basename(m.originalFile));
         this.addSuccess();
@@ -186,7 +191,7 @@ class AppState {
       }
     });
 
-    worker.on('exit', async (exitCode) => {
+    worker.on('exit', async () => {
       await dialog.showMessageBox({
         type: 'info',
         button: ['Ok'],
@@ -198,7 +203,7 @@ class AppState {
     });
 
     worker.on('error', (err) => {
-      console.log(`error from worker:`, err);
+      console.log('error from worker:', err);
     });
   }
 

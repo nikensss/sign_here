@@ -6,7 +6,10 @@ const AppState = require('./classes/AppState');
 
 const appState = new AppState();
 
-ipcMain.on('get-messages', (event) => (event.returnValue = Message));
+ipcMain.on('get-messages', (event) => {
+  // eslint-disable-next-line no-param-reassign
+  event.returnValue = Message;
+});
 
 function createWindow() {
   // Create the browser window.
@@ -37,7 +40,7 @@ function createWindow() {
 
   appState.show(path.join(__dirname, 'html', 'index.html'));
 
-  appState.openDevTools();
+  // appState.openDevTools();
 }
 
 app.whenReady().then(createWindow);

@@ -19,17 +19,27 @@
   },
   "homepage": "https://github.com/nikensss/sign_here#readme",
   "devDependencies": {
+    "@commitlint/cli": "^11.0.0",
+    "@commitlint/config-conventional": "^11.0.0",
     "@electron-forge/cli": "^6.0.0-beta.54",
     "@electron-forge/maker-deb": "^6.0.0-beta.54",
     "@electron-forge/maker-rpm": "^6.0.0-beta.54",
     "@electron-forge/maker-squirrel": "^6.0.0-beta.54",
     "@electron-forge/maker-zip": "^6.0.0-beta.54",
-    "electron": "^9.4.2"
+    "babel-eslint": "^10.1.0",
+    "electron": "^9.4.2",
+    "eslint": "^7.19.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-config-prettier": "^7.2.0",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-prettier": "^3.3.1",
+    "husky": "^4.3.8"
   },
   "dependencies": {
     "bootstrap": "^4.5.0",
     "chalk": "^4.0.0",
     "dotenv": "^8.2.0",
+    "electron": "^9.4.2",
     "electron-squirrel-startup": "^1.0.0",
     "jquery": "^3.5.1",
     "node-abi": "^2.19.3",
@@ -39,5 +49,11 @@
   },
   "config": {
     "forge": "config.js"
+  },
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
+      "pre-commit": "npx prettier --write src/**/*.js && npx eslint --fix src/**/*.js && git add --all"
+    }
   }
 }

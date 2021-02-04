@@ -1,4 +1,5 @@
-const { ipcRenderer, webFrame, contextBridge } = require('electron');
+/* eslint-disable no-console */
+const { ipcRenderer, contextBridge } = require('electron');
 
 const Message = ipcRenderer.sendSync('get-messages');
 
@@ -12,7 +13,7 @@ process.once('loaded', () => {
     );
     window.postMessage({
       type: Message.COLLECTED_PDFS,
-      pdfs: pdfs
+      pdfs
     });
   });
 
@@ -23,7 +24,7 @@ process.once('loaded', () => {
     );
     window.postMessage({
       type: Message.COLLECTED_SIGNATURE,
-      signature: signature
+      signature
     });
   });
 
@@ -34,11 +35,11 @@ process.once('loaded', () => {
     );
     window.postMessage({
       type: Message.COLLECTED_TARGET_TEXT,
-      targetText: targetText
+      targetText
     });
   });
 
-  ipcRenderer.on(Message.CAN_SIGN, event => {
+  ipcRenderer.on(Message.CAN_SIGN, () => {
     console.log('[preload - ipcRenderer] can sign!');
     window.postMessage({
       type: Message.CAN_SIGN
@@ -49,7 +50,7 @@ process.once('loaded', () => {
     console.log('[preload - ipcRenderer] received file signed ', file);
     window.postMessage({
       type: Message.FILE_SIGNED,
-      file: file
+      file
     });
   });
 
@@ -61,12 +62,12 @@ process.once('loaded', () => {
     );
     window.postMessage({
       type: Message.FILE_NOT_SIGNED,
-      file: file,
-      reason: reason
+      file,
+      reason
     });
   });
 
-  window.addEventListener('message', event => {
+  window.addEventListener('message', (event) => {
     if (!(event.origin === 'file://' && event.source === window)) {
       console.log('[preload] ignoring message of type', event.data.type);
     }
