@@ -6,7 +6,9 @@
   "scripts": {
     "start": "electron-forge start",
     "package": "electron-forge package",
-    "make": "electron-forge make"
+    "make": "electron-forge make",
+    "pretty": "prettier --write src/*.js src/classes/*.js",
+    "lint": "eslint --fix src/*.js src/classes/*.js"
   },
   "repository": {
     "type": "git",
@@ -53,7 +55,7 @@
   "husky": {
     "hooks": {
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
-      "pre-commit": "npx prettier --write src/**/*.js && npx eslint --fix src/**/*.js && git add --all"
+      "pre-commit": "npm run pretty && npm lint && git add --all"
     }
   }
 }
